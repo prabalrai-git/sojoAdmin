@@ -1,0 +1,81 @@
+form {
+  padding-bottom: 3rem;
+  .double-input-wrapper {
+    display: flex;
+    gap: 1rem;
+    .input-wrapper {
+      flex: 1;
+      label {
+        font-size: 0.9rem;
+        //   font-weight: 500;
+      }
+      p {
+        font-size: 0.8rem;
+      }
+    }
+    .input-wrapper.check {
+      border: 2px solid #e7e7e8;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      label {
+        cursor: pointer;
+        font-size: 0.89rem;
+        margin-top: 0.1rem;
+        user-select: none;
+      }
+    }
+  }
+
+  .double-input-wrapper {
+    .input-wrapper {
+      flex: 1;
+    }
+  }
+
+  img {
+    width: 50%;
+    margin-top: 1rem;
+    cursor: pointer;
+  }
+}
+
+.editorClassName {
+  flex: 1;
+  min-height: 20rem !important;
+  max-width: 36rem;
+  @media (max-width: 1400px) {
+    max-width: 31.1rem;
+  }
+}
+.ql-container {
+  max-width: 36rem;
+
+  @media (max-width: 1400px) {
+    max-width: 31.5rem;
+  }
+  .ql-editor {
+    height: 20rem !important;
+  }
+}
+
+.details-wrapper {
+  display: flex;
+  gap: 1rem;
+  img {
+    width: 6rem;
+    object-fit: contain;
+  }
+  .details {
+    h5 {
+      font-size: 1.1rem;
+    }
+    p {
+      font-size: 0.9rem;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+@import "./../../styles/colors.scss";
+
+.navbar {
+  background-color: #f3f4f7;
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  .links {
+    display: flex;
+    gap: 2rem;
+    .link {
+      color: $primary;
+      font-size: 0.98rem;
+    }
+  }
+}
