@@ -25,13 +25,22 @@ const News = () => {
   }, []);
 
   const sendPushNotification = async (item) => {
+    const topics = [];
+
+    for (let x in item.topics) {
+      // console.log(item.topics[x].name);
+      topics.push(item.topics[x].name);
+    }
+
     const data = {
       title: item.title,
       previewText: item.previewText,
       image: item.image,
-      topic: item.topics[0].name,
+      topics: topics,
+      id: item.id,
     };
 
+    // return console.log(data);
     try {
       const res = await Axios.post(
         "admin/news/sendPushNotification",
