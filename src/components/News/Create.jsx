@@ -66,27 +66,25 @@ const CreateTopic = () => {
     fetchData();
   }, []);
 
-
-  useEffect(()=>{
-    const fetchData = async () =>{
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        
         const arr = [];
-        const res = await Axios.get("/states/getAllStates") 
-        res.data.data.forEach((item)=>{
+        const res = await Axios.get("/states/getAllStates");
+        res.data.data.forEach((item) => {
           arr.push({
-            value:item.id,
-            label:item.name
+            value: item.id,
+            label: item.name,
           });
         });
-  
-        setStates(arr)
+
+        setStates(arr);
       } catch (error) {
         console.log(error);
       }
-    }
+    };
     fetchData();
-  },[])
+  }, []);
 
   // console.log(states);
 
@@ -119,7 +117,6 @@ const CreateTopic = () => {
         const ageGroupArr = [];
         const genderArr = [];
         const stateArr = [];
-
 
         console.log(res.data.data);
 
@@ -167,17 +164,21 @@ const CreateTopic = () => {
           });
         }
 
-        if(typeof res.data.data.states === "object"){
-          res.data.data.states.forEach((item)=>{
+        if (typeof res.data.data.states === "object") {
+          res.data.data.states.forEach((item) => {
             stateArr.push({
-              label: states.map(e=>{if(e.value === Number(item))return e.label}),
-              value:item,
-            })
-          })
-        }else{
-            stateArr.push({
-            label:states.map(e=>{if(e.value === Number(res.data.data.states))return e.label}),
-            value: res.data.data.states
+              label: states.map((e) => {
+                if (e.value === Number(item)) return e.label;
+              }),
+              value: item,
+            });
+          });
+        } else {
+          stateArr.push({
+            label: states.map((e) => {
+              if (e.value === Number(res.data.data.states)) return e.label;
+            }),
+            value: res.data.data.states,
           });
         }
 
@@ -195,7 +196,7 @@ const CreateTopic = () => {
         setSponorURL(res.data.data.sponsorURL);
         setDisplayImage(res.data.data.image);
         setImage(res.data.data.image);
-        setState(stateArr)
+        setState(stateArr);
       } catch (err) {
         console.log(err);
         if (err.response.data.status === 404) {
@@ -226,24 +227,29 @@ const CreateTopic = () => {
       formData.append("title", title);
       formData.append("previewText", previewText);
       formData.append("news", news);
-      topic?.forEach((item) => {
-        formData.append("topic", item.value);
-      });
+      topic &&
+        topic?.forEach((item) => {
+          formData.append("topic", item.value);
+        });
 
-      ageGroup?.forEach((item) => {
-        formData.append("ageGroup", item.value);
-      });
+      ageGroup &&
+        ageGroup?.forEach((item) => {
+          formData.append("ageGroup", item.value);
+        });
 
-      gender?.forEach((item) => {
-        formData.append("gender", item.value);
-      });
+      gender &&
+        gender?.forEach((item) => {
+          formData.append("gender", item.value);
+        });
 
-      occupation?.forEach((item) => {
-        formData.append("occupation", item.value);
-      });
-      state?.forEach((item)=>{
-        formData.append("states",item.value);
-      })
+      occupation &&
+        occupation?.forEach((item) => {
+          formData.append("occupation", item.value);
+        });
+      state &&
+        state?.forEach((item) => {
+          formData.append("states", item.value);
+        });
 
       formData.append("isFeatured", isFeatured);
       formData.append("isNSFW", isNSFW);
@@ -251,16 +257,15 @@ const CreateTopic = () => {
       formData.append("sponsorURL", sponsorURL);
       formData.append("image", image);
 
-
       // return console.log(...formData);
 
       try {
         if (id) {
-  await Axios.patch(`/admin/news/${id}`, formData, config);
+          await Axios.patch(`/admin/news/${id}`, formData, config);
 
           toast.success("News Updated");
         } else {
-        await Axios.post("/admin/news", formData, config);
+          await Axios.post("/admin/news", formData, config);
           // console.log(res);
           setTitle("");
           setPreviewText("");
@@ -272,7 +277,7 @@ const CreateTopic = () => {
           setOccupation([]);
           setAgeGroup([]);
           setGender([]);
-          setState([])
+          setState([]);
           toast.success("News Created");
         }
         window.scrollTo(0, 0);
@@ -366,8 +371,6 @@ const CreateTopic = () => {
     }
   }, [title, config]);
 
-
-  console.log(state,'this state');
   return (
     <>
       <ToastContainer theme="colored" />
@@ -613,12 +616,10 @@ const CreateTopic = () => {
                   if (state.length === state.length - 1) {
                     setState([]);
                   } else {
-                    setState(
-                      states.filter((option) => option.value !== "*")
-                    );
+                    setState(states.filter((option) => option.value !== "*"));
                   }
                 } else {
-                  setState(selectedOptions)
+                  setState(selectedOptions);
                 }
               }}
             />

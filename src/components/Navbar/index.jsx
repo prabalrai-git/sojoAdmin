@@ -18,7 +18,6 @@ const Navbar = () => {
   const fetchProfile = async () => {
     try {
       const res = await Axios.get("/users/profile", config);
-      console.log(res);
     } catch (err) {
       console.log(err);
       logout();
