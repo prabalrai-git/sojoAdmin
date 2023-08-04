@@ -181,7 +181,7 @@ const News = () => {
                     {moment(item.createdAt).format("MMM Do YYYY h:mm:ss a")}{" "}
                     <br />
                     <span className="text-success">
-                      {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "}
+                      {/* {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "} */}
                     </span>
                   </td>
 
