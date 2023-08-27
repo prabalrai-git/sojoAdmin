@@ -257,8 +257,6 @@ const CreateTopic = () => {
       formData.append("sponsorURL", sponsorURL);
       formData.append("image", image);
 
-      // return console.log(...formData);
-
       try {
         if (id) {
           await Axios.patch(`/admin/news/${id}`, formData, config);
@@ -285,7 +283,7 @@ const CreateTopic = () => {
       } catch (err) {
         console.log(err);
         setLoading(false);
-        setErr(err.response.data.err);
+        setErr(err?.response?.data?.err);
       }
     }
   };
@@ -687,14 +685,18 @@ const CreateTopic = () => {
             onChange={(e) => {
               // return console.log(e.target.files[0].size / 1024 / 1024);
               setDisplayImage();
-              const sizeInMB = e.target.files[0].size / 1024 / 1024;
+              const sizeInMB = e.target.files[0]?.size / 1024 / 1024;
               if (sizeInMB > 10) {
                 setSizeError(true);
               } else {
                 setSizeError(false);
-                const img = URL.createObjectURL(e.target.files[0]);
-                setDisplayImage(img);
-                setImage(e.target.files[0]);
+                try {
+                  const img = URL.createObjectURL(e.target.files[0]);
+                  setDisplayImage(img);
+                  setImage(e.target.files[0]);
+                } catch (error) {
+                  console.log(error);
+                }
               }
             }}
           />

@@ -4,12 +4,19 @@ import "./../../styles/Heading.scss";
 import { toast, ToastContainer } from "react-toastify";
 import "./../../styles/Form.scss";
 import Delete from "./../Modals/Delete";
+import { DatePicker } from "antd";
+import moment from "moment-timezone";
+const { RangePicker } = DatePicker;
 
 const Users = () => {
   const [data, setData] = useState([]);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [id, setId] = useState(null);
   const [config, setConfig] = useState(null);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [filteredData, setFilteredData] = useState();
+  const [changed, setChanged] = useState(false);
   useEffect(() => {
     setConfig({
       headers: {
@@ -21,7 +28,13 @@ const Users = () => {
   const fetchData = async () => {
     try {
       const res = await Axios.get("/admin/users", config);
-      setData(res.data.data);
+
+      const formattedData = res.data.data.map((item) => ({
+        ...item,
+        createdAt: moment(item.createdAt).format("YYYY-MM-DD"),
+      }));
+
+      setData(formattedData);
     } catch (err) {
       console.log(err);
     }
@@ -32,6 +45,22 @@ const Users = () => {
   }, [config]);
 
   let sn = 1;
+
+  function filterDataByDateRange(data, startDate, endDate) {
+    return data.filter((item) => {
+      const itemDate = item.createdAt;
+
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  }
+
+  useEffect(() => {
+    if (data && startDate && endDate) {
+      const filteredData = filterDataByDateRange(data, startDate, endDate);
+      setFilteredData(filteredData);
+    }
+  }, [changed]);
+
   return (
     <>
       <ToastContainer />
@@ -51,6 +80,23 @@ const Users = () => {
           {/* <Link className="link" to={"/occupation/create"}>
             Create an Occupation
           </Link> */}
+          <div>
+            <RangePicker
+              onChange={
+                (e) => {
+                  setStartDate(moment(e[0].$d).format("YYYY-MM-DD"));
+                  setEndDate(moment(e[1].$d).format("YYYY-MM-DD"));
+                  setChanged((prev) => !prev);
+                }
+                // console.log(
+                //   moment(e[0].$d).format("MM/DD/YYYY"),
+                //   moment(e[1].$d).format("MM/DD/YYYY")
+                // )
+              }
+              style={{ width: 321, height: 46 }}
+              // format="YYYY-MM-DD HH:mm"
+            />
+          </div>
           <input
             type="text"
             placeholder="Search for a keyword"
@@ -68,14 +114,15 @@ const Users = () => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => {
-            return (
-              <tr scope="row" key={item.id}>
-                <td>{sn++}</td>
-                <td>{item.username}</td>
-                <td>{item.email}</td>
-                {/* <td>{item.phone}</td> */}
-                {/* <td className="d-flex gap-3">
+          {filteredData
+            ? filteredData.map((item) => {
+                return (
+                  <tr scope="row" key={item.id}>
+                    <td>{sn++}</td>
+                    <td>{item.username}</td>
+                    <td>{item.email}</td>
+                    {/* <td>{item.phone}</td> */}
+                    {/* <td className="d-flex gap-3">
                   <Link
                     to={`/occupation/create/${item.id}`}
                     className="btn btn-primary"
@@ -92,9 +139,36 @@ const Users = () => {
                     Delete
                   </button>
                 </td> */}
-              </tr>
-            );
-          })}
+                  </tr>
+                );
+              })
+            : data.map((item) => {
+                return (
+                  <tr scope="row" key={item.id}>
+                    <td>{sn++}</td>
+                    <td>{item.username}</td>
+                    <td>{item.email}</td>
+                    {/* <td>{item.phone}</td> */}
+                    {/* <td className="d-flex gap-3">
+                  <Link
+                    to={`/occupation/create/${item.id}`}
+                    className="btn btn-primary"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => {
+                      setIsDeleteOpen(true);
+                      setId(item.id);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td> */}
+                  </tr>
+                );
+              })}
         </tbody>
       </table>
     </>
