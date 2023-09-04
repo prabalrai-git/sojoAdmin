@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import "./styles/index.scss";
@@ -21,8 +21,18 @@ import News from "./components/News";
 import CreateNews from "./components/News/Create";
 
 import Users from "./components/Users";
+import { checkJwtToken } from "./helper/auth";
 
 const RootComponent = () => {
+  const [jwtTokenChecked, setJwtTokenChecked] = useState(false);
+  useEffect(() => {
+    checkJwtToken(); // Assuming checkJwtToken is an async function
+    setJwtTokenChecked(true);
+  }, []);
+
+  if (!jwtTokenChecked) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="home-wrapper">
       <Sidebar />
