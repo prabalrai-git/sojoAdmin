@@ -17,13 +17,26 @@ const Users = () => {
   const [endDate, setEndDate] = useState();
   const [filteredData, setFilteredData] = useState();
   const [changed, setChanged] = useState(false);
+  const [states, setStates] = useState([]);
+
   useEffect(() => {
     setConfig({
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
+    getStates();
   }, []);
+
+  const getStates = async () => {
+    try {
+      const res = await Axios.get("/states/getAllStates");
+
+      setStates(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -39,6 +52,8 @@ const Users = () => {
       console.log(err);
     }
   };
+
+  console.log(data);
 
   useEffect(() => {
     config && fetchData();
@@ -109,7 +124,10 @@ const Users = () => {
           <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
-            <th scope="col">email</th>
+            <th scope="col">Email</th>
+            <th scope="col">State</th>
+            <th scope="col">Skipped NSFW</th>
+            <th scope="col">Skipped Politics</th>
             {/* <th scope="col">Phone Number</th> */}
           </tr>
         </thead>
@@ -121,6 +139,18 @@ const Users = () => {
                     <td>{sn++}</td>
                     <td>{item.username}</td>
                     <td>{item.email}</td>
+                    <td>
+                      {item.stateId
+                        ? states?.map((watup) => {
+                            if (item.stateId === watup.id) {
+                              return watup.name;
+                            }
+                          })
+                        : "n/a"}
+                    </td>
+                    <td>{item.skipNSFW ? "Yes" : "No"}</td>
+                    <td>{item.skipPolitical ? "Yes" : "No"}</td>
+
                     {/* <td>{item.phone}</td> */}
                     {/* <td className="d-flex gap-3">
                   <Link
@@ -148,6 +178,18 @@ const Users = () => {
                     <td>{sn++}</td>
                     <td>{item.username}</td>
                     <td>{item.email}</td>
+                    <td>
+                      {item.stateId
+                        ? states?.map((watup) => {
+                            if (item.stateId === watup.id) {
+                              return watup.name;
+                            }
+                          })
+                        : "n/a"}
+                    </td>
+                    <td>{item.skipNSFW ? "Yes" : "No"}</td>
+                    <td>{item.skipPolitical ? "Yes" : "No"}</td>
+
                     {/* <td>{item.phone}</td> */}
                     {/* <td className="d-flex gap-3">
                   <Link
