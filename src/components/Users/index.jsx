@@ -6,6 +6,7 @@ import "./../../styles/Form.scss";
 import Delete from "./../Modals/Delete";
 import { DatePicker } from "antd";
 import moment from "moment-timezone";
+import { Table } from "antd";
 const { RangePicker } = DatePicker;
 
 const Users = () => {
@@ -18,6 +19,107 @@ const Users = () => {
   const [filteredData, setFilteredData] = useState();
   const [changed, setChanged] = useState(false);
   const [states, setStates] = useState([]);
+
+  console.log(data);
+
+  const columns = [
+    {
+      title: "S.N",
+      render: (item, index) => {
+        return sn++;
+      },
+    },
+    {
+      title: "Name",
+      dataIndex: "username",
+      sorter: (a, b) => a.username.localeCompare(b.username),
+
+      // width: "30%",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      // sorter: (a, b) => a.email?.length - b.email?.length,
+    },
+    {
+      title: "State",
+      dataIndex: "stateId",
+      render: (index, item) =>
+        item.stateId
+          ? states?.map((watup) => {
+              if (item.stateId === watup.id) {
+                return watup.name;
+              }
+            })
+          : "n/a",
+
+      // width: "40%",
+    },
+    {
+      title: "Skipped NSFW",
+      dataIndex: "skipNSFW",
+      filters: [
+        {
+          text: "Yes",
+          value: true,
+        },
+        {
+          text: "No",
+          value: false,
+        },
+      ],
+      render: (index, item) => (item.skipNSFW ? "Yes" : "No"),
+      onFilter: (value, record) => record.skipNSFW === value,
+      filterSearch: true,
+      // width: "40%",
+    },
+    {
+      title: "Skipped Politics ",
+      dataIndex: "skipPolitical",
+      filters: [
+        {
+          text: "Yes",
+          value: true,
+        },
+        {
+          text: "No",
+          value: false,
+        },
+      ],
+      render: (index, item) => (item.skipPolitical ? "Yes" : "No"),
+      onFilter: (value, record) => record.skipPolitical === value,
+      filterSearch: true,
+      // width: "40%",
+    },
+  ];
+  // const dataD = [
+  //   {
+  //     key: "1",
+  //     name: "John Brown",
+  //     age: 32,
+  //     address: "New York No. 1 Lake Park",
+  //   },
+  //   {
+  //     key: "2",
+  //     name: "Jim Green",
+  //     age: 42,
+  //     address: "London No. 1 Lake Park",
+  //   },
+  //   {
+  //     key: "3",
+  //     name: "Joe Black",
+  //     age: 32,
+  //     address: "Sydney No. 1 Lake Park",
+  //   },
+  //   {
+  //     key: "4",
+  //     name: "Jim Red",
+  //     age: 32,
+  //     address: "London No. 2 Lake Park",
+  //   },
+  // ];
+
+  //
 
   useEffect(() => {
     setConfig({
@@ -120,7 +222,7 @@ const Users = () => {
         </div>
       </div>
       <table className="table my-5">
-        <thead>
+        {/* <thead>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
@@ -128,10 +230,9 @@ const Users = () => {
             <th scope="col">State</th>
             <th scope="col">Skipped NSFW</th>
             <th scope="col">Skipped Politics</th>
-            {/* <th scope="col">Phone Number</th> */}
           </tr>
-        </thead>
-        <tbody>
+        </thead> */}
+        {/* <tbody>
           {filteredData
             ? filteredData.map((item) => {
                 return (
@@ -149,10 +250,10 @@ const Users = () => {
                         : "n/a"}
                     </td>
                     <td>{item.skipNSFW ? "Yes" : "No"}</td>
-                    <td>{item.skipPolitical ? "Yes" : "No"}</td>
+                    <td>{item.skipPolitical ? "Yes" : "No"}</td> */}
 
-                    {/* <td>{item.phone}</td> */}
-                    {/* <td className="d-flex gap-3">
+        {/* <td>{item.phone}</td> */}
+        {/* <td className="d-flex gap-3">
                   <Link
                     to={`/occupation/create/${item.id}`}
                     className="btn btn-primary"
@@ -169,7 +270,7 @@ const Users = () => {
                     Delete
                   </button>
                 </td> */}
-                  </tr>
+        {/* </tr>
                 );
               })
             : data.map((item) => {
@@ -188,10 +289,10 @@ const Users = () => {
                         : "n/a"}
                     </td>
                     <td>{item.skipNSFW ? "Yes" : "No"}</td>
-                    <td>{item.skipPolitical ? "Yes" : "No"}</td>
+                    <td>{item.skipPolitical ? "Yes" : "No"}</td> */}
 
-                    {/* <td>{item.phone}</td> */}
-                    {/* <td className="d-flex gap-3">
+        {/* <td>{item.phone}</td> */}
+        {/* <td className="d-flex gap-3">
                   <Link
                     to={`/occupation/create/${item.id}`}
                     className="btn btn-primary"
@@ -208,11 +309,16 @@ const Users = () => {
                     Delete
                   </button>
                 </td> */}
-                  </tr>
+        {/* </tr>
                 );
               })}
-        </tbody>
+        </tbody> */}
       </table>
+      <Table
+        columns={columns}
+        dataSource={filteredData ? filteredData : data}
+        pagination={{ pageSize: 10 }}
+      />
     </>
   );
 };
