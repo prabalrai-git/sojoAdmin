@@ -25,8 +25,8 @@ const Users = () => {
   const columns = [
     {
       title: "S.N",
-      render: (item, index) => {
-        return sn++;
+      render: (text, record, index) => {
+        return index + 1;
       },
     },
     {
@@ -317,7 +317,7 @@ const Users = () => {
       <Table
         columns={columns}
         dataSource={filteredData ? filteredData : data}
-        pagination={{ pageSize: 10 }}
+        // pagination={{ pageSize: 10 }}
       />
     </>
   );
