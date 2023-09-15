@@ -314,6 +314,16 @@ const Users = () => {
               })}
         </tbody> */}
       </table>
+      <p
+        style={{
+          fontWeight: "bold",
+          textDecoration: "underline",
+          fontSize: 18,
+        }}
+      >
+        Total Number Of Users :{"  "}
+        <span style={{ color: "#26B160" }}>{data.length}</span>
+      </p>
       <Table
         columns={columns}
         dataSource={filteredData ? filteredData : data}
