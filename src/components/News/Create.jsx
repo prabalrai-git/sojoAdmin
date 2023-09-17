@@ -118,8 +118,6 @@ const CreateTopic = () => {
         const genderArr = [];
         const stateArr = [];
 
-        console.log(res.data.data);
-
         res.data.data.topics
           .sort((a, b) => a.news_topic.order - b.news_topic.order)
           .forEach((item) => {

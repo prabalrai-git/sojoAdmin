@@ -34,7 +34,6 @@ const LoginPage = () => {
     };
     try {
       const res = await Axios.post("/auth/login", data);
-      console.log(res.data.data);
       if (res.data.data.role !== "admin") {
         setErr("Unauthorized");
         return false;

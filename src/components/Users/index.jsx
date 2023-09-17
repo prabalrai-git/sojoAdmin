@@ -4,9 +4,10 @@ import "./../../styles/Heading.scss";
 import { toast, ToastContainer } from "react-toastify";
 import "./../../styles/Form.scss";
 import Delete from "./../Modals/Delete";
-import { DatePicker } from "antd";
+import { Button, DatePicker, Tag } from "antd";
 import moment from "moment-timezone";
 import { Table } from "antd";
+import { Link } from "react-router-dom";
 const { RangePicker } = DatePicker;
 
 const Users = () => {
@@ -19,8 +20,6 @@ const Users = () => {
   const [filteredData, setFilteredData] = useState();
   const [changed, setChanged] = useState(false);
   const [states, setStates] = useState([]);
-
-  console.log(data);
 
   const columns = [
     {
@@ -91,7 +90,32 @@ const Users = () => {
       filterSearch: true,
       // width: "40%",
     },
+    {
+      title: "Active Today",
+      dataIndex: "userIsActiveToday",
+      render: (index, item) =>
+        item.userIsActiveToday ? (
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <Tag color="green">Yes</Tag>
+            <Link to={`/userActivity/${item.id}`} className="link">
+              <Button type="primary" size={"small"} onClick={() => {}}>
+                View More
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <Tag color="red">No</Tag>
+            <Link to={`/userActivity/${item.id}`} className="link">
+              <Button type="primary" size={"small"}>
+                View More
+              </Button>
+            </Link>
+          </div>
+        ),
+    },
   ];
+
   // const dataD = [
   //   {
   //     key: "1",
@@ -154,8 +178,6 @@ const Users = () => {
       console.log(err);
     }
   };
-
-  console.log(data);
 
   useEffect(() => {
     config && fetchData();
