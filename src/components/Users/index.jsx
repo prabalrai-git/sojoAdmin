@@ -4,10 +4,11 @@ import "./../../styles/Heading.scss";
 import { toast, ToastContainer } from "react-toastify";
 import "./../../styles/Form.scss";
 import Delete from "./../Modals/Delete";
-import { Button, DatePicker, Tag } from "antd";
+import { Button, DatePicker, Select, Tag } from "antd";
 import moment from "moment-timezone";
 import { Table } from "antd";
 import { Link } from "react-router-dom";
+import "./index.css";
 const { RangePicker } = DatePicker;
 
 const Users = () => {
@@ -20,6 +21,8 @@ const Users = () => {
   const [filteredData, setFilteredData] = useState();
   const [changed, setChanged] = useState(false);
   const [states, setStates] = useState([]);
+  const [activityFilter, setActivityFilter] = useState(null);
+  const [filteredByActivity, setFilteredByActivity] = useState([]);
 
   const columns = [
     {
@@ -200,6 +203,36 @@ const Users = () => {
     }
   }, [changed]);
 
+  function filterDataByUserActivity() {
+    if (activityFilter !== null) {
+      if (filteredData) {
+        return filteredData.filter((item) => {
+          if (activityFilter === "Active") {
+            return item.userIsActiveToday === true;
+          }
+          if (activityFilter === "Inactive") {
+            return item.userIsActiveToday === false;
+          }
+        });
+      } else if (data) {
+        return data.filter((item) => {
+          if (activityFilter === "Active") {
+            return item.userIsActiveToday === true;
+          }
+          if (activityFilter === "Inactive") {
+            return item.userIsActiveToday === false;
+          }
+        });
+      }
+    }
+  }
+
+  useEffect(() => {
+    const filteredData = filterDataByUserActivity();
+    console.log(filteredData, "disdsidisdsi");
+    setFilteredByActivity(filteredData);
+  }, [activityFilter]);
+
   return (
     <>
       <ToastContainer />
@@ -215,7 +248,7 @@ const Users = () => {
       )}
       <div className="heading">
         <h3>Users</h3>
-        <div className="heading-create">
+        <div className="heading-create" style={{ flex: 0.7 }}>
           {/* <Link className="link" to={"/occupation/create"}>
             Create an Occupation
           </Link> */}
@@ -236,6 +269,30 @@ const Users = () => {
               // format="YYYY-MM-DD HH:mm"
             />
           </div>
+          <div>
+            <Select
+              style={{ width: 200 }}
+              placeholder="Select user activity"
+              optionFilterProp="children"
+              onChange={(e) => setActivityFilter(e)}
+              // filterOption={filterOption}
+              options={[
+                {
+                  value: "Active",
+                  label: "Active",
+                },
+                {
+                  value: "Inactive",
+                  label: "Inactive",
+                },
+                {
+                  value: null,
+                  label: "All",
+                },
+              ]}
+            />
+          </div>
+
           <input
             type="text"
             placeholder="Search for a keyword"
@@ -348,7 +405,13 @@ const Users = () => {
       </p>
       <Table
         columns={columns}
-        dataSource={filteredData ? filteredData : data}
+        dataSource={
+          filteredByActivity
+            ? filteredByActivity
+            : filteredData
+            ? filteredData
+            : data
+        }
         // pagination={{ pageSize: 10 }}
       />
     </>
