@@ -46,6 +46,10 @@ const index = () => {
             Users
           </NavLink>
 
+          {/* <NavLink className="link-item" to={"/usersByActivity"}>
+            Users By Activity
+          </NavLink> */}
+
           <NavLink className="link-item" to={"/analytics"}>
             Analytics
           </NavLink>

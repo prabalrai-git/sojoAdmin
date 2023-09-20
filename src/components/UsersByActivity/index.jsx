@@ -8,10 +8,10 @@ import { Button, DatePicker, Select, Tag } from "antd";
 import moment from "moment-timezone";
 import { Table } from "antd";
 import { Link } from "react-router-dom";
-import "./index.css";
+import "../Users/index.css";
 const { RangePicker } = DatePicker;
 
-const Users = () => {
+const UsersByActivity = () => {
   const [data, setData] = useState([]);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [id, setId] = useState(null);
@@ -23,7 +23,6 @@ const Users = () => {
   const [states, setStates] = useState([]);
   const [activityFilter, setActivityFilter] = useState(null);
   const [filteredByActivity, setFilteredByActivity] = useState([]);
-  const [userActive, setUserActive] = useState([]);
 
   const columns = [
     {
@@ -95,7 +94,7 @@ const Users = () => {
       // width: "40%",
     },
     {
-      title: "Active Today",
+      title: "Active",
       dataIndex: "userIsActiveToday",
       render: (index, item) =>
         item.userIsActiveToday ? (
@@ -200,6 +199,7 @@ const Users = () => {
   useEffect(() => {
     if (data && startDate && endDate) {
       const filteredData = filterDataByDateRange(data, startDate, endDate);
+      getUsersByDateRangeForActivity();
 
       setFilteredData(filteredData);
     }
@@ -229,23 +229,11 @@ const Users = () => {
     }
   }
 
-  useEffect(() => {
-    if (startDate && endDate) {
-      getUsersByDateRangeForActivity();
-    }
-  }, [startDate, endDate, filteredData]);
-
-  useEffect(() => {
-    if (userActive) {
-      for (let user in userActive) {
-        for (let value in filteredData) {
-          if (userActive[user].userId === filteredData[value].id) {
-            filteredData[value].userIsActiveToday = true;
-          }
-        }
-      }
-    }
-  }, [userActive]);
+  // useEffect(() => {
+  //   if (startDate && endDate) {
+  //     getUsersByDateRangeForActivity();
+  //   }
+  // }, [startDate, endDate, filteredData]);
 
   const getUsersByDateRangeForActivity = async () => {
     try {
@@ -253,7 +241,14 @@ const Users = () => {
         `/users/profile/getUserActivity?startDate=${startDate}&endDate=${endDate}`
       );
       const userActive = res.data.data;
-      setUserActive(userActive);
+
+      for (let user in userActive) {
+        for (let value in filteredData) {
+          if (userActive[user].userId === filteredData[value].id) {
+            filteredData[value].userIsActiveToday = true;
+          }
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -262,7 +257,7 @@ const Users = () => {
   useEffect(() => {
     const filteredData = filterDataByUserActivity();
     setFilteredByActivity(filteredData);
-  }, [activityFilter, startDate, filteredData]);
+  }, [activityFilter]);
 
   return (
     <>
@@ -278,7 +273,7 @@ const Users = () => {
         />
       )}
       <div className="heading">
-        <h3>Users</h3>
+        <h3>UsersByActivity</h3>
         <div className="heading-create" style={{ flex: 0.7 }}>
           {/* <Link className="link" to={"/occupation/create"}>
             Create an Occupation
@@ -431,7 +426,7 @@ const Users = () => {
           fontSize: 18,
         }}
       >
-        Total Number Of Users :{"  "}
+        Total Number Of UsersByActivity :{"  "}
         <span style={{ color: "#26B160" }}>{data.length}</span>
       </p>
       <Table
@@ -449,4 +444,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default UsersByActivity;
