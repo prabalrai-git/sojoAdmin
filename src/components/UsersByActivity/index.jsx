@@ -104,6 +104,7 @@ const UsersByActivity = () => {
 
   useEffect(() => {
     if (startDate && endDate) {
+      setData();
       getUsersByDateRangeForActivity();
     }
   }, [startDate, endDate, allUsers]);
