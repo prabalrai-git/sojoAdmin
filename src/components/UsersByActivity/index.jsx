@@ -235,7 +235,7 @@ const UsersByActivity = () => {
           marginTop: 10,
         }}
       >
-        Total Users :
+        Total Users Count :
         <span style={{ color: "black", fontWeight: "bold", marginLeft: 4 }}>
           {allUsers?.length}
         </span>
@@ -261,7 +261,7 @@ const UsersByActivity = () => {
           marginBottom: 20,
         }}
       >
-        InActive Users Count :
+        In-Active Users Count :
         <span style={{ color: "red", fontWeight: "bold", marginLeft: 4 }}>
           {Number(allUsers?.length) - Number(totalActiveUsers)}
         </span>
