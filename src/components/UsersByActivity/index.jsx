@@ -15,10 +15,7 @@ const UsersByActivity = () => {
   const [config, setConfig] = useState(null);
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
-  const [activityFilter, setActivityFilter] = useState(null);
-  const [filteredByActivity, setFilteredByActivity] = useState(null);
-  const [userActive, setUserActive] = useState([]);
-  const [totalUsersNumber, setTotalUsersNumber] = useState();
+  const [totalActiveUsers, setTotalActiveUsers] = useState();
   const [allUsers, setAllUsers] = useState();
 
   // useEffect(() => {
@@ -137,7 +134,7 @@ const UsersByActivity = () => {
       const mergedUsers = [...users, ...filteredTotalUsers];
       users.push(mergedUsers);
       setData(mergedUsers);
-      setTotalUsersNumber(users.length - 1);
+      setTotalActiveUsers(users.length - 1);
     } catch (error) {
       console.log(error);
     }
@@ -226,31 +223,44 @@ const UsersByActivity = () => {
         style={{
           fontWeight: "normal",
           // textDecoration: "underline",
-          fontSize: 18,
+          fontSize: 14,
+          marginBottom: 5,
+        }}
+      >
+        Total Users :
+        <span style={{ color: "black", fontWeight: "bold", marginLeft: 4 }}>
+          {allUsers?.length}
+        </span>
+      </p>
+      <p
+        style={{
+          fontWeight: "normal",
+          // textDecoration: "underline",
+          fontSize: 14,
+          marginBottom: 5,
+        }}
+      >
+        Active Users Count :
+        <span style={{ color: "#26B160", fontWeight: "bold", marginLeft: 4 }}>
+          {totalActiveUsers}
+        </span>
+      </p>
+      <p
+        style={{
+          fontWeight: "normal",
+          // textDecoration: "underline",
+          fontSize: 14,
           marginBottom: 50,
         }}
       >
-        Active Users Count
-        <span
-          style={{
-            textDecoration: "none",
-            fontSize: 16,
-            fontWeight: "bold",
-            marginLeft: 10,
-          }}
-        >
-          {/* {` ${startDate?.toISOString().split("T")[0]} `}
-          <span style={{ textDecoration: "none" }}>to</span>{" "}
-          {`${startDate?.toISOString().split("T")[0]} `} */}
-        </span>
-        :
-        <span style={{ color: "#26B160", fontWeight: "bold", marginLeft: 4 }}>
-          {totalUsersNumber}
+        InActive Users Count :
+        <span style={{ color: "red", fontWeight: "bold", marginLeft: 4 }}>
+          {Number(allUsers?.length) - Number(totalActiveUsers)}
         </span>
       </p>
       <Table
         columns={columns}
-        dataSource={filteredByActivity ? filteredByActivity : data}
+        dataSource={data}
         // pagination={{ pageSize: 10 }}
       />
     </>
