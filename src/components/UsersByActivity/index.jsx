@@ -166,8 +166,15 @@ const UsersByActivity = () => {
 
   return (
     <>
-      <div className="heading">
-        <h4>Users By Activity</h4>
+      <div
+        className="heading"
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <h3>Users By Activity</h3>
         <div className="heading-create">
           {/* <Link className="link" to={"/occupation/create"}>
             Create an Occupation
@@ -189,7 +196,7 @@ const UsersByActivity = () => {
               //   moment(e[1].$d).format("MM/DD/YYYY")
               // )
             }
-            style={{ width: "80%", height: 46 }}
+            style={{ width: "75%", marginLeft: "25%", height: 46 }}
             // format="YYYY-MM-DD HH:mm"
           />
           {/* </div> */}
@@ -225,6 +232,7 @@ const UsersByActivity = () => {
           // textDecoration: "underline",
           fontSize: 14,
           marginBottom: 5,
+          marginTop: 10,
         }}
       >
         Total Users :
@@ -250,7 +258,7 @@ const UsersByActivity = () => {
           fontWeight: "normal",
           // textDecoration: "underline",
           fontSize: 14,
-          marginBottom: 50,
+          marginBottom: 20,
         }}
       >
         InActive Users Count :
