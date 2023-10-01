@@ -46,9 +46,9 @@ const index = () => {
             Users
           </NavLink>
 
-          {/* <NavLink className="link-item" to={"/usersByActivity"}>
+          <NavLink className="link-item" to={"/usersByActivity"}>
             Users By Activity
-          </NavLink> */}
+          </NavLink>
 
           <NavLink className="link-item" to={"/analytics"}>
             Analytics

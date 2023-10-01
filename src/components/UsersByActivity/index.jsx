@@ -1,28 +1,40 @@
 import { useState, useEffect } from "react";
 import Axios from "./../../api/server";
 import "./../../styles/Heading.scss";
-import { toast, ToastContainer } from "react-toastify";
 import "./../../styles/Form.scss";
-import Delete from "./../Modals/Delete";
 import { Button, DatePicker, Select, Tag } from "antd";
 import moment from "moment-timezone";
 import { Table } from "antd";
 import { Link } from "react-router-dom";
-import "../Users/index.css";
+import "./index.css";
+import dayjs from "dayjs";
 const { RangePicker } = DatePicker;
 
 const UsersByActivity = () => {
   const [data, setData] = useState([]);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [id, setId] = useState(null);
   const [config, setConfig] = useState(null);
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
-  const [filteredData, setFilteredData] = useState();
-  const [changed, setChanged] = useState(false);
-  const [states, setStates] = useState([]);
   const [activityFilter, setActivityFilter] = useState(null);
-  const [filteredByActivity, setFilteredByActivity] = useState([]);
+  const [filteredByActivity, setFilteredByActivity] = useState(null);
+  const [userActive, setUserActive] = useState([]);
+  const [totalUsersNumber, setTotalUsersNumber] = useState();
+  const [allUsers, setAllUsers] = useState();
+
+  // useEffect(() => {
+  //   setTotalUsers(filteredData?fildata.length);
+  // }, [data]);
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Month is 0-based, so we add 1 and pad with leading zero if needed
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
+
+  useEffect(() => {
+    setStartDate(today);
+    setEndDate(today);
+  }, []);
 
   const columns = [
     {
@@ -43,64 +55,28 @@ const UsersByActivity = () => {
       dataIndex: "email",
       // sorter: (a, b) => a.email?.length - b.email?.length,
     },
-    {
-      title: "State",
-      dataIndex: "stateId",
-      render: (index, item) =>
-        item.stateId
-          ? states?.map((watup) => {
-              if (item.stateId === watup.id) {
-                return watup.name;
-              }
-            })
-          : "n/a",
 
-      // width: "40%",
-    },
-    {
-      title: "Skipped NSFW",
-      dataIndex: "skipNSFW",
-      filters: [
-        {
-          text: "Yes",
-          value: true,
-        },
-        {
-          text: "No",
-          value: false,
-        },
-      ],
-      render: (index, item) => (item.skipNSFW ? "Yes" : "No"),
-      onFilter: (value, record) => record.skipNSFW === value,
-      filterSearch: true,
-      // width: "40%",
-    },
-    {
-      title: "Skipped Politics ",
-      dataIndex: "skipPolitical",
-      filters: [
-        {
-          text: "Yes",
-          value: true,
-        },
-        {
-          text: "No",
-          value: false,
-        },
-      ],
-      render: (index, item) => (item.skipPolitical ? "Yes" : "No"),
-      onFilter: (value, record) => record.skipPolitical === value,
-      filterSearch: true,
-      // width: "40%",
-    },
     {
       title: "Active",
       dataIndex: "userIsActiveToday",
+      filters: [
+        {
+          text: "Yes",
+          value: true,
+        },
+        {
+          text: "No",
+          value: false,
+        },
+      ],
+      onFilter: (value, record) => record.userActivityActive === value,
+      filterSearch: true,
+
       render: (index, item) =>
-        item.userIsActiveToday ? (
+        item?.userActivityActive ? (
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Tag color="green">Yes</Tag>
-            <Link to={`/userActivity/${item.id}`} className="link">
+            <Link to={`/userActivity/${item?.id}`} className="link">
               <Button type="primary" size={"small"} onClick={() => {}}>
                 View More
               </Button>
@@ -109,7 +85,7 @@ const UsersByActivity = () => {
         ) : (
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Tag color="red">No</Tag>
-            <Link to={`/userActivity/${item.id}`} className="link">
+            <Link to={`/userActivity/${item?.id}`} className="link">
               <Button type="primary" size={"small"}>
                 View More
               </Button>
@@ -119,33 +95,6 @@ const UsersByActivity = () => {
     },
   ];
 
-  // const dataD = [
-  //   {
-  //     key: "1",
-  //     name: "John Brown",
-  //     age: 32,
-  //     address: "New York No. 1 Lake Park",
-  //   },
-  //   {
-  //     key: "2",
-  //     name: "Jim Green",
-  //     age: 42,
-  //     address: "London No. 1 Lake Park",
-  //   },
-  //   {
-  //     key: "3",
-  //     name: "Joe Black",
-  //     age: 32,
-  //     address: "Sydney No. 1 Lake Park",
-  //   },
-  //   {
-  //     key: "4",
-  //     name: "Jim Red",
-  //     age: 32,
-  //     address: "London No. 2 Lake Park",
-  //   },
-  // ];
-
   //
 
   useEffect(() => {
@@ -154,29 +103,61 @@ const UsersByActivity = () => {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
-    getStates();
   }, []);
 
-  const getStates = async () => {
-    try {
-      const res = await Axios.get("/states/getAllStates");
+  useEffect(() => {
+    if (startDate && endDate) {
+      getUsersByDateRangeForActivity();
+    }
+  }, [startDate, endDate, allUsers]);
 
-      setStates(res.data.data);
+  const getUsersByDateRangeForActivity = async () => {
+    try {
+      const res = await Axios.get(
+        `/users/profile/getUserActivity?startDate=${startDate}&endDate=${endDate}`
+      );
+      const data = res.data.data;
+      let users = [];
+      // console.log(data);
+      for (let i in data) {
+        if (data[i].user) {
+          users.push({ ...data[i].user, userActivityActive: data[i].isActive });
+        }
+      }
+      const totalUsers = users?.map((item) => {
+        return allUsers?.map((user) => {
+          if (item.id !== user.id) {
+            return { ...user, userActivityActive: false };
+          }
+        });
+      });
+      const filteredTotalUsers = totalUsers[0].filter(
+        (item) => item !== undefined || null
+      );
+      const mergedUsers = [...users, ...filteredTotalUsers];
+      users.push(mergedUsers);
+      setData(mergedUsers);
+      setTotalUsersNumber(users.length - 1);
     } catch (error) {
       console.log(error);
     }
   };
+  const dateFormat = "YYYY-MM-DD";
+
+  useEffect(() => {
+    setConfig({
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+  }, []);
 
   const fetchData = async () => {
     try {
       const res = await Axios.get("/admin/users", config);
 
-      const formattedData = res.data.data.map((item) => ({
-        ...item,
-        createdAt: moment(item.createdAt).format("YYYY-MM-DD"),
-      }));
-
-      setData(formattedData);
+      // console.log(res.data.data, "hi");
+      setAllUsers(res.data.data);
     } catch (err) {
       console.log(err);
     }
@@ -186,116 +167,36 @@ const UsersByActivity = () => {
     config && fetchData();
   }, [config]);
 
-  let sn = 1;
-
-  function filterDataByDateRange(data, startDate, endDate) {
-    return data.filter((item) => {
-      const itemDate = item.createdAt;
-
-      return itemDate >= startDate && itemDate <= endDate;
-    });
-  }
-
-  useEffect(() => {
-    if (data && startDate && endDate) {
-      const filteredData = filterDataByDateRange(data, startDate, endDate);
-      getUsersByDateRangeForActivity();
-
-      setFilteredData(filteredData);
-    }
-  }, [changed, activityFilter, startDate, endDate]);
-
-  function filterDataByUserActivity() {
-    if (activityFilter !== null) {
-      if (filteredData) {
-        return filteredData.filter((item) => {
-          if (activityFilter === "Active") {
-            return item.userIsActiveToday === true;
-          }
-          if (activityFilter === "Inactive") {
-            return item.userIsActiveToday === false;
-          }
-        });
-      } else if (data) {
-        return data.filter((item) => {
-          if (activityFilter === "Active") {
-            return item.userIsActiveToday === true;
-          }
-          if (activityFilter === "Inactive") {
-            return item.userIsActiveToday === false;
-          }
-        });
-      }
-    }
-  }
-
-  // useEffect(() => {
-  //   if (startDate && endDate) {
-  //     getUsersByDateRangeForActivity();
-  //   }
-  // }, [startDate, endDate, filteredData]);
-
-  const getUsersByDateRangeForActivity = async () => {
-    try {
-      const res = await Axios.get(
-        `/users/profile/getUserActivity?startDate=${startDate}&endDate=${endDate}`
-      );
-      const userActive = res.data.data;
-
-      for (let user in userActive) {
-        for (let value in filteredData) {
-          if (userActive[user].userId === filteredData[value].id) {
-            filteredData[value].userIsActiveToday = true;
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    const filteredData = filterDataByUserActivity();
-    setFilteredByActivity(filteredData);
-  }, [activityFilter]);
-
   return (
     <>
-      <ToastContainer />
-      {id && isDeleteOpen && (
-        <Delete
-          title={"Do you want to delete this occupation ?"}
-          fetchData={fetchData}
-          route={`/admin/occupations/${id}`}
-          setIsDeleteOpen={setIsDeleteOpen}
-          toastMessage="Occupations deleted successfully"
-          toast={toast}
-        />
-      )}
       <div className="heading">
-        <h3>UsersByActivity</h3>
-        <div className="heading-create" style={{ flex: 0.7 }}>
+        <h4>Users By Activity</h4>
+        <div className="heading-create">
           {/* <Link className="link" to={"/occupation/create"}>
             Create an Occupation
           </Link> */}
-          <div>
-            <RangePicker
-              onChange={
-                (e) => {
-                  setStartDate(moment(e[0].$d).format("YYYY-MM-DD"));
-                  setEndDate(moment(e[1].$d).format("YYYY-MM-DD"));
-                  setChanged((prev) => !prev);
-                }
-                // console.log(
-                //   moment(e[0].$d).format("MM/DD/YYYY"),
-                //   moment(e[1].$d).format("MM/DD/YYYY")
-                // )
+          {/* <div> */}
+          <RangePicker
+            defaultValue={[
+              dayjs(formattedDate, dateFormat),
+              dayjs(formattedDate, dateFormat),
+            ]}
+            format={dateFormat}
+            onChange={
+              (e) => {
+                e && setStartDate(moment(e[0]?.$d).format("YYYY-MM-DD"));
+                e && setEndDate(moment(e[1]?.$d).format("YYYY-MM-DD"));
               }
-              style={{ width: 321, height: 46 }}
-              // format="YYYY-MM-DD HH:mm"
-            />
-          </div>
-          <div>
+              // console.log(
+              //   moment(e[0].$d).format("MM/DD/YYYY"),
+              //   moment(e[1].$d).format("MM/DD/YYYY")
+              // )
+            }
+            style={{ width: "80%", height: 46 }}
+            // format="YYYY-MM-DD HH:mm"
+          />
+          {/* </div> */}
+          {/* <div>
             <Select
               style={{ width: 200 }}
               placeholder="Select user activity"
@@ -317,127 +218,39 @@ const UsersByActivity = () => {
                 },
               ]}
             />
-          </div>
-
-          <input
-            type="text"
-            placeholder="Search for a keyword"
-            className="form-control"
-          />
+          </div> */}
         </div>
       </div>
-      <table className="table my-5">
-        {/* <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">State</th>
-            <th scope="col">Skipped NSFW</th>
-            <th scope="col">Skipped Politics</th>
-          </tr>
-        </thead> */}
-        {/* <tbody>
-          {filteredData
-            ? filteredData.map((item) => {
-                return (
-                  <tr scope="row" key={item.id}>
-                    <td>{sn++}</td>
-                    <td>{item.username}</td>
-                    <td>{item.email}</td>
-                    <td>
-                      {item.stateId
-                        ? states?.map((watup) => {
-                            if (item.stateId === watup.id) {
-                              return watup.name;
-                            }
-                          })
-                        : "n/a"}
-                    </td>
-                    <td>{item.skipNSFW ? "Yes" : "No"}</td>
-                    <td>{item.skipPolitical ? "Yes" : "No"}</td> */}
 
-        {/* <td>{item.phone}</td> */}
-        {/* <td className="d-flex gap-3">
-                  <Link
-                    to={`/occupation/create/${item.id}`}
-                    className="btn btn-primary"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => {
-                      setIsDeleteOpen(true);
-                      setId(item.id);
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td> */}
-        {/* </tr>
-                );
-              })
-            : data.map((item) => {
-                return (
-                  <tr scope="row" key={item.id}>
-                    <td>{sn++}</td>
-                    <td>{item.username}</td>
-                    <td>{item.email}</td>
-                    <td>
-                      {item.stateId
-                        ? states?.map((watup) => {
-                            if (item.stateId === watup.id) {
-                              return watup.name;
-                            }
-                          })
-                        : "n/a"}
-                    </td>
-                    <td>{item.skipNSFW ? "Yes" : "No"}</td>
-                    <td>{item.skipPolitical ? "Yes" : "No"}</td> */}
-
-        {/* <td>{item.phone}</td> */}
-        {/* <td className="d-flex gap-3">
-                  <Link
-                    to={`/occupation/create/${item.id}`}
-                    className="btn btn-primary"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => {
-                      setIsDeleteOpen(true);
-                      setId(item.id);
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td> */}
-        {/* </tr>
-                );
-              })}
-        </tbody> */}
-      </table>
       <p
         style={{
-          fontWeight: "bold",
-          textDecoration: "underline",
+          fontWeight: "normal",
+          // textDecoration: "underline",
           fontSize: 18,
+          marginBottom: 50,
         }}
       >
-        Total Number Of UsersByActivity :{"  "}
-        <span style={{ color: "#26B160" }}>{data.length}</span>
+        Active Users Count
+        <span
+          style={{
+            textDecoration: "none",
+            fontSize: 16,
+            fontWeight: "bold",
+            marginLeft: 10,
+          }}
+        >
+          {/* {` ${startDate?.toISOString().split("T")[0]} `}
+          <span style={{ textDecoration: "none" }}>to</span>{" "}
+          {`${startDate?.toISOString().split("T")[0]} `} */}
+        </span>
+        :
+        <span style={{ color: "#26B160", fontWeight: "bold", marginLeft: 4 }}>
+          {totalUsersNumber}
+        </span>
       </p>
       <Table
         columns={columns}
-        dataSource={
-          filteredByActivity
-            ? filteredByActivity
-            : filteredData
-            ? filteredData
-            : data
-        }
+        dataSource={filteredByActivity ? filteredByActivity : data}
         // pagination={{ pageSize: 10 }}
       />
     </>

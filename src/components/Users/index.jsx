@@ -21,9 +21,11 @@ const Users = () => {
   const [filteredData, setFilteredData] = useState();
   const [changed, setChanged] = useState(false);
   const [states, setStates] = useState([]);
-  const [activityFilter, setActivityFilter] = useState(null);
-  const [filteredByActivity, setFilteredByActivity] = useState([]);
-  const [userActive, setUserActive] = useState([]);
+  const [totalUsers, setTotalUsers] = useState();
+
+  useEffect(() => {
+    setTotalUsers(filteredData ? filteredData.length : data.length);
+  }, [data, filteredData]);
 
   const columns = [
     {
@@ -94,60 +96,31 @@ const Users = () => {
       filterSearch: true,
       // width: "40%",
     },
-    {
-      title: "Active Today",
-      dataIndex: "userIsActiveToday",
-      render: (index, item) =>
-        item.userIsActiveToday ? (
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <Tag color="green">Yes</Tag>
-            <Link to={`/userActivity/${item.id}`} className="link">
-              <Button type="primary" size={"small"} onClick={() => {}}>
-                View More
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <Tag color="red">No</Tag>
-            <Link to={`/userActivity/${item.id}`} className="link">
-              <Button type="primary" size={"small"}>
-                View More
-              </Button>
-            </Link>
-          </div>
-        ),
-    },
+    // {
+    //   title: "Active Today",
+    //   dataIndex: "userIsActiveToday",
+    //   render: (index, item) =>
+    //     item.userIsActiveToday ? (
+    //       <div style={{ display: "flex", justifyContent: "space-between" }}>
+    //         <Tag color="green">Yes</Tag>
+    //         <Link to={`/userActivity/${item.id}`} className="link">
+    //           <Button type="primary" size={"small"} onClick={() => {}}>
+    //             View More
+    //           </Button>
+    //         </Link>
+    //       </div>
+    //     ) : (
+    //       <div style={{ display: "flex", justifyContent: "space-between" }}>
+    //         <Tag color="red">No</Tag>
+    //         <Link to={`/userActivity/${item.id}`} className="link">
+    //           <Button type="primary" size={"small"}>
+    //             View More
+    //           </Button>
+    //         </Link>
+    //       </div>
+    //     ),
+    // },
   ];
-
-  // const dataD = [
-  //   {
-  //     key: "1",
-  //     name: "John Brown",
-  //     age: 32,
-  //     address: "New York No. 1 Lake Park",
-  //   },
-  //   {
-  //     key: "2",
-  //     name: "Jim Green",
-  //     age: 42,
-  //     address: "London No. 1 Lake Park",
-  //   },
-  //   {
-  //     key: "3",
-  //     name: "Joe Black",
-  //     age: 32,
-  //     address: "Sydney No. 1 Lake Park",
-  //   },
-  //   {
-  //     key: "4",
-  //     name: "Jim Red",
-  //     age: 32,
-  //     address: "London No. 2 Lake Park",
-  //   },
-  // ];
-
-  //
 
   useEffect(() => {
     setConfig({
@@ -203,66 +176,7 @@ const Users = () => {
 
       setFilteredData(filteredData);
     }
-  }, [changed, activityFilter, startDate, endDate]);
-
-  function filterDataByUserActivity() {
-    if (activityFilter !== null) {
-      if (filteredData) {
-        return filteredData.filter((item) => {
-          if (activityFilter === "Active") {
-            return item.userIsActiveToday === true;
-          }
-          if (activityFilter === "Inactive") {
-            return item.userIsActiveToday === false;
-          }
-        });
-      } else if (data) {
-        return data.filter((item) => {
-          if (activityFilter === "Active") {
-            return item.userIsActiveToday === true;
-          }
-          if (activityFilter === "Inactive") {
-            return item.userIsActiveToday === false;
-          }
-        });
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (startDate && endDate) {
-      getUsersByDateRangeForActivity();
-    }
-  }, [startDate, endDate, filteredData]);
-
-  useEffect(() => {
-    if (userActive) {
-      for (let user in userActive) {
-        for (let value in filteredData) {
-          if (userActive[user].userId === filteredData[value].id) {
-            filteredData[value].userIsActiveToday = true;
-          }
-        }
-      }
-    }
-  }, [userActive]);
-
-  const getUsersByDateRangeForActivity = async () => {
-    try {
-      const res = await Axios.get(
-        `/users/profile/getUserActivity?startDate=${startDate}&endDate=${endDate}`
-      );
-      const userActive = res.data.data;
-      setUserActive(userActive);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    const filteredData = filterDataByUserActivity();
-    setFilteredByActivity(filteredData);
-  }, [activityFilter, startDate, filteredData]);
+  }, [changed, startDate, endDate]);
 
   return (
     <>
@@ -300,7 +214,7 @@ const Users = () => {
               // format="YYYY-MM-DD HH:mm"
             />
           </div>
-          <div>
+          {/* <div>
             <Select
               style={{ width: 200 }}
               placeholder="Select user activity"
@@ -322,7 +236,7 @@ const Users = () => {
                 },
               ]}
             />
-          </div>
+          </div> */}
 
           <input
             type="text"
@@ -426,23 +340,18 @@ const Users = () => {
       </table>
       <p
         style={{
-          fontWeight: "bold",
-          textDecoration: "underline",
+          // fontWeight: "bold",
           fontSize: 18,
         }}
       >
-        Total Number Of Users :{"  "}
-        <span style={{ color: "#26B160" }}>{data.length}</span>
+        Total Number Of Users :
+        <span style={{ color: "#26B160", fontWeight: "bold" }}>
+          {totalUsers}
+        </span>
       </p>
       <Table
         columns={columns}
-        dataSource={
-          filteredByActivity
-            ? filteredByActivity
-            : filteredData
-            ? filteredData
-            : data
-        }
+        dataSource={filteredData ? filteredData : data}
         // pagination={{ pageSize: 10 }}
       />
     </>
