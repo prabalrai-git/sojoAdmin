@@ -199,6 +199,10 @@ const Users = () => {
           </Link> */}
           <div>
             <RangePicker
+              disabledDate={(current) => {
+                let customDate = moment().format("YYYY-MM-DD");
+                return current && current > moment(customDate, "YYYY-MM-DD");
+              }}
               onChange={
                 (e) => {
                   setStartDate(moment(e[0].$d).format("YYYY-MM-DD"));

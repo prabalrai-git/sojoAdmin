@@ -182,6 +182,10 @@ const UsersByActivity = () => {
           </Link> */}
           {/* <div> */}
           <RangePicker
+            disabledDate={(current) => {
+              let customDate = moment().format("YYYY-MM-DD");
+              return current && current > moment(customDate, "YYYY-MM-DD");
+            }}
             defaultValue={[
               dayjs(formattedDate, dateFormat),
               dayjs(formattedDate, dateFormat),
