@@ -201,7 +201,7 @@ const Users = () => {
             <RangePicker
               disabledDate={(current) => {
                 let customDate = moment().format("YYYY-MM-DD");
-                return current && current > moment(customDate, "YYYY-MM-DD");
+                return current && current >= moment(customDate, "YYYY-MM-DD");
               }}
               onChange={
                 (e) => {
