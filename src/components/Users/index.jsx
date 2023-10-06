@@ -9,6 +9,8 @@ import moment from "moment-timezone";
 import { Table } from "antd";
 import { Link } from "react-router-dom";
 import "./index.css";
+import dayjs from "dayjs";
+
 const { RangePicker } = DatePicker;
 
 const Users = () => {
@@ -177,7 +179,14 @@ const Users = () => {
       setFilteredData(filteredData);
     }
   }, [changed, startDate, endDate]);
+  let customDate = moment().format("YYYY-MM-DD");
 
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Month is 0-based, so we add 1 and pad with leading zero if needed
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
+  const dateFormat = "YYYY-MM-DD";
   return (
     <>
       <ToastContainer />
@@ -200,8 +209,10 @@ const Users = () => {
           <div>
             <RangePicker
               disabledDate={(current) => {
-                let customDate = moment().format("YYYY-MM-DD");
-                return current && current >= moment(customDate, "YYYY-MM-DD");
+                const nextDay = moment().add(1, "day").startOf("day"); // Get the start of the next day
+
+                // Allow today's date and disable dates in the future
+                return current && current >= nextDay;
               }}
               onChange={
                 (e) => {
