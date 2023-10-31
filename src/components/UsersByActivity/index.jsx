@@ -109,6 +109,20 @@ const UsersByActivity = () => {
     }
   }, [startDate, endDate, allUsers]);
 
+  function removeDuplicates(array) {
+    const seenIds = new Set();
+
+    return array.filter((object) => {
+      if (seenIds.has(object.id)) {
+        return false;
+      }
+
+      seenIds.add(object.id);
+
+      return true;
+    });
+  }
+
   const getUsersByDateRangeForActivity = async () => {
     try {
       const res = await Axios.get(
@@ -134,7 +148,8 @@ const UsersByActivity = () => {
       );
       const mergedUsers = [...users, ...filteredTotalUsers];
       users.push(mergedUsers);
-      setData(mergedUsers);
+      const removedDuplicateMergedUsers = removeDuplicates(mergedUsers);
+      setData(removedDuplicateMergedUsers);
       setTotalActiveUsers(users.length - 1);
     } catch (error) {
       console.log(error);
