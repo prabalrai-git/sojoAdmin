@@ -395,7 +395,7 @@ const CreateTopic = () => {
               }}
             />
             <p className="text-muted mt-2">
-              Suggested title length is 126 characters{" "}
+              Suggested title length is 63 characters{" "}
               {title.length > 0 && `( ${title.length} characters )`}
             </p>
           </div>
@@ -432,7 +432,7 @@ const CreateTopic = () => {
               {/* {previewText.length === 0
                 ? "Suggested title length is 161 characters"
                 : previewText.length + " words"} */}
-              Suggested preview title length is 148 characters{" "}
+              Suggested preview title length is 95 characters{" "}
               {previewText.length > 0 && `( ${previewText.length} characters )`}
             </p>
           </div>
