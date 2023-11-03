@@ -25,6 +25,9 @@ const index = () => {
           <NavLink className="link-item" to={"/popularTopics"}>
             Topics By Popularity
           </NavLink>
+          <NavLink className="link-item" to={"/popularStates"}>
+            States By Popularity
+          </NavLink>
 
           <NavLink className="link-item" to={"/occupation"}>
             Occupation

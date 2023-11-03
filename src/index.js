@@ -25,6 +25,7 @@ import { checkJwtToken } from "./helper/auth";
 import PopularTopics from "./components/PopularTopics";
 import UserActivity from "./components/UserActivity";
 import UsersByActivity from "./components/UsersByActivity";
+import PopularStates from "./components/PopularStates";
 
 const RootComponent = () => {
   const [jwtTokenChecked, setJwtTokenChecked] = useState(false);
@@ -94,6 +95,16 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <PopularTopics />,
+      },
+    ],
+  },
+  {
+    path: "/popularStates",
+    element: <RootComponent />,
+    children: [
+      {
+        path: "",
+        element: <PopularStates />,
       },
     ],
   },

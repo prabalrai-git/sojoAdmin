@@ -23,11 +23,18 @@ const Users = () => {
   const [filteredData, setFilteredData] = useState();
   const [changed, setChanged] = useState(false);
   const [states, setStates] = useState([]);
+  const [statesSelect, setStatesSelect] = useState([]);
   const [totalUsers, setTotalUsers] = useState();
 
   useEffect(() => {
-    setTotalUsers(filteredData ? filteredData.length : data.length);
+    setTotalUsers(filteredData ? filteredData?.length : data?.length);
   }, [data, filteredData]);
+
+  const resetBtnClicked = () => {
+    setData();
+    setFilteredData();
+    fetchData();
+  };
 
   const columns = [
     {
@@ -52,9 +59,9 @@ const Users = () => {
       title: "State",
       dataIndex: "stateId",
       render: (index, item) =>
-        item.stateId
+        item?.stateId
           ? states?.map((watup) => {
-              if (item.stateId === watup.id) {
+              if (item?.stateId === watup.id) {
                 return watup.name;
               }
             })
@@ -75,8 +82,8 @@ const Users = () => {
           value: false,
         },
       ],
-      render: (index, item) => (item.skipNSFW ? "Yes" : "No"),
-      onFilter: (value, record) => record.skipNSFW === value,
+      render: (index, item) => (item?.skipNSFW ? "Yes" : "No"),
+      onFilter: (value, record) => record?.skipNSFW === value,
       filterSearch: true,
       // width: "40%",
     },
@@ -93,35 +100,11 @@ const Users = () => {
           value: false,
         },
       ],
-      render: (index, item) => (item.skipPolitical ? "Yes" : "No"),
-      onFilter: (value, record) => record.skipPolitical === value,
+      render: (index, item) => (item?.skipPolitical ? "Yes" : "No"),
+      onFilter: (value, record) => record?.skipPolitical === value,
       filterSearch: true,
       // width: "40%",
     },
-    // {
-    //   title: "Active Today",
-    //   dataIndex: "userIsActiveToday",
-    //   render: (index, item) =>
-    //     item.userIsActiveToday ? (
-    //       <div style={{ display: "flex", justifyContent: "space-between" }}>
-    //         <Tag color="green">Yes</Tag>
-    //         <Link to={`/userActivity/${item.id}`} className="link">
-    //           <Button type="primary" size={"small"} onClick={() => {}}>
-    //             View More
-    //           </Button>
-    //         </Link>
-    //       </div>
-    //     ) : (
-    //       <div style={{ display: "flex", justifyContent: "space-between" }}>
-    //         <Tag color="red">No</Tag>
-    //         <Link to={`/userActivity/${item.id}`} className="link">
-    //           <Button type="primary" size={"small"}>
-    //             View More
-    //           </Button>
-    //         </Link>
-    //       </div>
-    //     ),
-    // },
   ];
 
   useEffect(() => {
@@ -136,6 +119,12 @@ const Users = () => {
   const getStates = async () => {
     try {
       const res = await Axios.get("/states/getAllStates");
+
+      const selectStates = res.data.data.map((item) => {
+        return { value: item.id, label: item.name };
+      });
+
+      setStatesSelect(selectStates);
 
       setStates(res.data.data);
     } catch (error) {
@@ -185,8 +174,20 @@ const Users = () => {
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, "0"); // Month is 0-based, so we add 1 and pad with leading zero if needed
   const day = String(today.getDate()).padStart(2, "0");
-  const formattedDate = `${year}-${month}-${day}`;
-  const dateFormat = "YYYY-MM-DD";
+
+  const onChange = (value) => {
+    setFilteredData([]);
+    const stateFilteredData = data?.filter((item) => {
+      return Number(item?.stateId) === Number(value);
+    });
+
+    setFilteredData(stateFilteredData);
+  };
+
+  const onSearch = (value) => {};
+  const filterOption = (input, option) =>
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+
   return (
     <>
       <ToastContainer />
@@ -253,11 +254,24 @@ const Users = () => {
             />
           </div> */}
 
-          <input
+          {/* <input
             type="text"
             placeholder="Search for a keyword"
             className="form-control"
+            style={{ width: 200 }}
+          /> */}
+          <Select
+            showSearch
+            placeholder="Select a state"
+            optionFilterProp="children"
+            onChange={onChange}
+            onSearch={onSearch}
+            filterOption={filterOption}
+            allowClear
+            options={statesSelect}
+            style={{ width: 210 }}
           />
+          <button onClick={() => resetBtnClicked()}>Reset</button>
         </div>
       </div>
       <table className="table my-5">
