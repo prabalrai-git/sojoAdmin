@@ -4,10 +4,11 @@ import "./../../styles/Heading.scss";
 import "./../../styles/Form.scss";
 import { Button, DatePicker, Select, Tag } from "antd";
 import moment from "moment-timezone";
-import { Table } from "antd";
+import { Table, Input } from "antd";
 import { Link } from "react-router-dom";
 import "./index.css";
 import dayjs from "dayjs";
+import ActiveDisplay from "./ActiveDisplay";
 const { RangePicker } = DatePicker;
 
 const UsersByActivity = () => {
@@ -17,6 +18,8 @@ const UsersByActivity = () => {
   const [endDate, setEndDate] = useState();
   const [totalActiveUsers, setTotalActiveUsers] = useState();
   const [allUsers, setAllUsers] = useState();
+  const [reRender, setReRender] = useState(false);
+  const [activeDaysFilter, setActiveDaysFilter] = useState(null);
 
   // useEffect(() => {
   //   setTotalUsers(filteredData?fildata.length);
@@ -32,6 +35,37 @@ const UsersByActivity = () => {
     setStartDate(today);
     setEndDate(today);
   }, []);
+
+  const onActiveDaysSelected = (e) => {
+    const inputValue = e.target.value;
+    setActiveDaysFilter(inputValue);
+
+    if (inputValue.trim() === "") {
+      // Reset to the initial state if the input is empty
+      setData(allUsers);
+    } else {
+      // Filter and sort the data based on the input value
+      const filteredData = data.filter((item) =>
+        String(item.activeDays).includes(inputValue)
+      );
+
+      const sortedData = filteredData
+        .slice()
+        .sort((a, b) => a.activeDays - b.activeDays);
+
+      setData(sortedData);
+    }
+  };
+
+  // const getUserActivityOverTime = async (userId) => {
+  //   try {
+  //     const response = await Axios.get(
+  //       `/users/profile/getUserActivity?userId=${userId}`
+  //     );
+  //     return response.data.data.length;
+  //   } catch (error) {}
+
+  // };
 
   const columns = [
     {
@@ -51,6 +85,16 @@ const UsersByActivity = () => {
       title: "Email",
       dataIndex: "email",
       // sorter: (a, b) => a.email?.length - b.email?.length,
+    },
+    {
+      title: "Active Days",
+
+      render: (text, record) => {
+        return <ActiveDisplay id={record.id} data={data} />;
+      },
+      // sorter: async (a, b) => {
+      //   console.log(a);
+      // },
     },
 
     {
@@ -107,7 +151,7 @@ const UsersByActivity = () => {
       setData();
       getUsersByDateRangeForActivity();
     }
-  }, [startDate, endDate, allUsers]);
+  }, [startDate, endDate, allUsers, reRender]);
 
   function removeDuplicates(array) {
     const seenIds = new Set();
@@ -129,6 +173,7 @@ const UsersByActivity = () => {
         `/users/profile/getUserActivity?startDate=${startDate}&endDate=${endDate}`
       );
       const data = res.data.data;
+
       let users = [];
       // console.log(data);
       for (let i in data) {
@@ -143,18 +188,30 @@ const UsersByActivity = () => {
           }
         });
       });
-      const filteredTotalUsers = totalUsers[0].filter(
+      const filteredTotalUsers = totalUsers[0]?.filter(
         (item) => item !== undefined || null
       );
       const mergedUsers = [...users, ...filteredTotalUsers];
       users.push(mergedUsers);
       const removedDuplicateMergedUsers = removeDuplicates(mergedUsers);
+
       setData(removedDuplicateMergedUsers);
+
       setTotalActiveUsers(users.length - 1);
     } catch (error) {
       console.log(error);
     }
   };
+
+  // const getUserActivityOverTime = async (id) => {
+  //   try {
+  //     const response = await Axios.get(
+  //       `/users/profile/getUserActivity?userId=${id}`
+  //     );
+  //     // console.log("hi", response.data.data);
+  //     return response.data.data.length;
+  //   } catch (error) {}
+  // };
   const dateFormat = "YYYY-MM-DD";
 
   useEffect(() => {
@@ -196,6 +253,13 @@ const UsersByActivity = () => {
             Create an Occupation
           </Link> */}
           {/* <div> */}
+          <Input
+            onChange={onActiveDaysSelected}
+            value={activeDaysFilter}
+            style={{ minWidth: 140 }}
+            placeholder="Input active days"
+            maxLength={16}
+          />
           <RangePicker
             disabledDate={(current) => {
               let customDate = moment().format("YYYY-MM-DD");
@@ -216,7 +280,7 @@ const UsersByActivity = () => {
               //   moment(e[1].$d).format("MM/DD/YYYY")
               // )
             }
-            style={{ width: "75%", marginLeft: "25%", height: 46 }}
+            style={{ width: "70%", marginLeft: "5%", height: 46 }}
             // format="YYYY-MM-DD HH:mm"
           />
           {/* </div> */}
