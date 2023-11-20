@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import "./index.css";
 import dayjs from "dayjs";
 import ActiveDisplay from "./ActiveDisplay";
+import IntegerStep from "./IntegerStep";
+import { CSVLink, CSVDownload } from "react-csv";
 const { RangePicker } = DatePicker;
 
 const UsersByActivity = () => {
@@ -20,6 +22,8 @@ const UsersByActivity = () => {
   const [allUsers, setAllUsers] = useState();
   const [reRender, setReRender] = useState(false);
   const [activeDaysFilter, setActiveDaysFilter] = useState(null);
+  const [pages, setPages] = useState(10);
+  const [csvData, setCSVData] = useState();
 
   // useEffect(() => {
   //   setTotalUsers(filteredData?fildata.length);
@@ -35,7 +39,6 @@ const UsersByActivity = () => {
     setStartDate(today);
     setEndDate(today);
   }, []);
-
   const onActiveDaysSelected = (e) => {
     const inputValue = e.target.value;
     setActiveDaysFilter(inputValue);
@@ -56,6 +59,25 @@ const UsersByActivity = () => {
       setData(sortedData);
     }
   };
+
+  useEffect(() => {
+    if (data) {
+      setTimeout(() => {
+        let i = 1;
+        const slicedData = data.slice(0, pages + 1);
+        const csvData = slicedData.map((item) => {
+          console.log(item.activeDays, "this item");
+          return {
+            SN: i++,
+            Name: item?.username,
+            Email: item?.email,
+            ActiveDays: item?.activeDays ? item.activeDays : 0,
+          };
+        });
+        setCSVData(csvData);
+      }, 500);
+    }
+  }, [data, pages]);
 
   // const getUserActivityOverTime = async (userId) => {
   //   try {
@@ -253,6 +275,7 @@ const UsersByActivity = () => {
             Create an Occupation
           </Link> */}
           {/* <div> */}
+
           <Input
             onChange={onActiveDaysSelected}
             value={activeDaysFilter}
@@ -260,6 +283,11 @@ const UsersByActivity = () => {
             placeholder="Input active days"
             maxLength={16}
           />
+
+          {/* <IntegerStep
+            onActiveDaysSelected={onActiveDaysSelected}
+            activeDaysFilter={activeDaysFilter}
+          /> */}
           <RangePicker
             disabledDate={(current) => {
               let customDate = moment().format("YYYY-MM-DD");
@@ -280,9 +308,29 @@ const UsersByActivity = () => {
               //   moment(e[1].$d).format("MM/DD/YYYY")
               // )
             }
-            style={{ width: "70%", marginLeft: "5%", height: 46 }}
+            style={{ width: "100%", marginLeft: "5%", height: 46 }}
             // format="YYYY-MM-DD HH:mm"
           />
+          {csvData && (
+            <CSVLink
+              data={csvData}
+              style={{
+                backgroundColor: "#26B160",
+                width: 200,
+                height: 46,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                textDecoration: "none",
+                color: "white",
+                borderRadius: 5,
+                fontSize: 14,
+                fontWeight: "bold",
+              }}
+            >
+              Excel Export
+            </CSVLink>
+          )}
           {/* </div> */}
           {/* <div>
             <Select
@@ -351,6 +399,7 @@ const UsersByActivity = () => {
         </span>
       </p>
       <Table
+        pagination={{ pageSize: pages, onChange: (e, a) => setPages(a) }}
         columns={columns}
         dataSource={data}
         // pagination={{ pageSize: 10 }}
