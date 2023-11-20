@@ -33,17 +33,17 @@ const index = () => {
             Occupation
           </NavLink>
 
-          <NavLink className="link-item" to={"/stories"}>
+          {/* <NavLink className="link-item" to={"/stories"}>
             Stories
-          </NavLink>
+          </NavLink> */}
 
           <NavLink className="link-item" to={"/title"}>
             Title
           </NavLink>
 
-          <NavLink className="link-item" to={"/ads"}>
+          {/* <NavLink className="link-item" to={"/ads"}>
             Ads
-          </NavLink>
+          </NavLink> */}
 
           <NavLink className="link-item" to={"/users"}>
             Users
@@ -53,9 +53,9 @@ const index = () => {
             Users By Activity
           </NavLink>
 
-          <NavLink className="link-item" to={"/analytics"}>
+          {/* <NavLink className="link-item" to={"/analytics"}>
             Analytics
-          </NavLink>
+          </NavLink> */}
         </div>
       </div>
     </>
