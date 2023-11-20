@@ -41,7 +41,6 @@ const Users = () => {
     try {
       const response = await Axios.get("/occupations");
 
-      console.log(response.data.data);
       setAllOccupation(response.data.data);
     } catch (error) {
       console.log(error);

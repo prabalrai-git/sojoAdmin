@@ -690,7 +690,7 @@ const CreateTopic = () => {
                 setSizeError(false);
                 try {
                   const img = URL.createObjectURL(e.target.files[0]);
-                  console.log(e.target.files[0], "yo");
+                  // console.log(e.target.files[0], "yo");
                   setDisplayImage(img);
                   setImage(e.target.files[0]);
                 } catch (error) {
