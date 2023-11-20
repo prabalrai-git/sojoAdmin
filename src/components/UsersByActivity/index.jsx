@@ -45,11 +45,14 @@ const UsersByActivity = () => {
 
     if (inputValue.trim() === "") {
       // Reset to the initial state if the input is empty
-      setData(allUsers);
+      // setData(allUsers);
+      getUsersByDateRangeForActivity();
     } else {
       // Filter and sort the data based on the input value
-      const filteredData = data.filter((item) =>
-        String(item.activeDays).includes(inputValue)
+      const filteredData = data.filter(
+        (item) =>
+          // String(item.activeDays).includes(inputValue)
+          Number(item.activeDays) >= Number(inputValue)
       );
 
       const sortedData = filteredData
@@ -66,7 +69,6 @@ const UsersByActivity = () => {
         let i = 1;
         const slicedData = data.slice(0, pages + 1);
         const csvData = slicedData.map((item) => {
-          console.log(item.activeDays, "this item");
           return {
             SN: i++,
             Name: item?.username,
@@ -279,8 +281,8 @@ const UsersByActivity = () => {
           <Input
             onChange={onActiveDaysSelected}
             value={activeDaysFilter}
-            style={{ minWidth: 140 }}
-            placeholder="Input active days"
+            style={{ minWidth: 280 }}
+            placeholder="Filter greater or equals to active days.."
             maxLength={16}
           />
 

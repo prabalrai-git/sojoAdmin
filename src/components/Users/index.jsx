@@ -25,6 +25,7 @@ const Users = () => {
   const [states, setStates] = useState([]);
   const [statesSelect, setStatesSelect] = useState([]);
   const [totalUsers, setTotalUsers] = useState();
+  const [allOccupation, setAllOccupation] = useState();
 
   useEffect(() => {
     setTotalUsers(filteredData ? filteredData?.length : data?.length);
@@ -36,6 +37,18 @@ const Users = () => {
     fetchData();
   };
 
+  const getAllOccupation = async () => {
+    try {
+      const response = await Axios.get("/occupations");
+
+      console.log(response.data.data);
+      setAllOccupation(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // console.log(data);
   const columns = [
     {
       title: "S.N",
@@ -105,8 +118,21 @@ const Users = () => {
       filterSearch: true,
       // width: "40%",
     },
-  ];
+    {
+      title: "Occupation",
+      dataIndex: "occupationId",
+      render: (index, item) =>
+        item?.occupationId
+          ? allOccupation?.map((watup) => {
+              if (item?.occupationId === watup.id) {
+                return watup.name;
+              }
+            })
+          : "n/a",
 
+      // width: "40%",
+    },
+  ];
   useEffect(() => {
     setConfig({
       headers: {
@@ -114,6 +140,7 @@ const Users = () => {
       },
     });
     getStates();
+    getAllOccupation();
   }, []);
 
   const getStates = async () => {
