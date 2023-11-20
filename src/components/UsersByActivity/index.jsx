@@ -316,9 +316,11 @@ const UsersByActivity = () => {
               data={csvData}
               style={{
                 backgroundColor: "#26B160",
-                width: 200,
+                width: 250,
                 height: 46,
                 display: "flex",
+                // paddingLeft: 30,
+                // paddingRight:10
                 justifyContent: "center",
                 alignItems: "center",
                 textDecoration: "none",
