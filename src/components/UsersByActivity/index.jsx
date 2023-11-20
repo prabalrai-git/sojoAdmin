@@ -24,6 +24,7 @@ const UsersByActivity = () => {
   const [activeDaysFilter, setActiveDaysFilter] = useState(null);
   const [pages, setPages] = useState(10);
   const [csvData, setCSVData] = useState();
+  const [filteredDataNumber, setFilteredDataNumber] = useState();
 
   // useEffect(() => {
   //   setTotalUsers(filteredData?fildata.length);
@@ -403,7 +404,7 @@ const UsersByActivity = () => {
           fontWeight: "normal",
           // textDecoration: "underline",
           fontSize: 14,
-          marginBottom: 20,
+          marginBottom: 10,
         }}
       >
         In-Active Users Count :
@@ -411,8 +412,25 @@ const UsersByActivity = () => {
           {Number(allUsers?.length) - Number(totalActiveUsers)}
         </span>
       </p>
+      <p
+        style={{
+          fontWeight: "normal",
+          // textDecoration: "underline",
+          fontSize: 14,
+          marginBottom: 20,
+        }}
+      >
+        Count After filter Applied :
+        <span style={{ color: "blue", fontWeight: "bold", marginLeft: 4 }}>
+          {filteredDataNumber}
+        </span>
+      </p>
       <Table
-        pagination={{ pageSize: pages, onChange: (e, a) => setPages(a) }}
+        pagination={{
+          pageSize: pages,
+          onChange: (e, a) => setPages(a),
+          showTotal: (e, a) => setFilteredDataNumber(e),
+        }}
         columns={columns}
         dataSource={data}
         // pagination={{ pageSize: 10 }}

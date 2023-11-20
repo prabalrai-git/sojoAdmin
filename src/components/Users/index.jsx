@@ -26,6 +26,7 @@ const Users = () => {
   const [statesSelect, setStatesSelect] = useState([]);
   const [totalUsers, setTotalUsers] = useState();
   const [allOccupation, setAllOccupation] = useState();
+  const [filteredDataNumber, setFilteredDataNumber] = useState();
 
   useEffect(() => {
     setTotalUsers(filteredData ? filteredData?.length : data?.length);
@@ -431,7 +432,21 @@ const Users = () => {
           {totalUsers}
         </span>
       </p>
+      <p
+        style={{
+          // fontWeight: "bold",
+          fontSize: 18,
+        }}
+      >
+        Count after filter applied :
+        <span style={{ color: "blue", fontWeight: "bold" }}>
+          {filteredDataNumber}
+        </span>
+      </p>
       <Table
+        pagination={{
+          showTotal: (e, a) => setFilteredDataNumber(e),
+        }}
         columns={columns}
         dataSource={filteredData ? filteredData : data}
         // pagination={{ pageSize: 10 }}
