@@ -94,9 +94,11 @@ const UsersByActivity = () => {
   const columns = [
     {
       title: "S.N",
-      render: (text, record, index) => {
-        return index + 1;
-      },
+      dataIndex: "SN",
+
+      // render: (text, record, index) => {
+      //   return index + 1;
+      // },
     },
     {
       title: "Name",
@@ -202,10 +204,13 @@ const UsersByActivity = () => {
       // console.log(data);
       for (let i in data) {
         if (data[i].user) {
-          users.push({ ...data[i].user, userActivityActive: data[i].isActive });
+          users.push({
+            ...data[i].user,
+            userActivityActive: data[i].isActive,
+          });
         }
       }
-      const totalUsers = users?.map((item) => {
+      const totalUsers = users?.map((item, index) => {
         return allUsers?.map((user) => {
           if (item.id !== user.id) {
             return { ...user, userActivityActive: false };
@@ -219,7 +224,11 @@ const UsersByActivity = () => {
       users.push(mergedUsers);
       const removedDuplicateMergedUsers = removeDuplicates(mergedUsers);
 
-      setData(removedDuplicateMergedUsers);
+      const numberAddedData = removedDuplicateMergedUsers.map((item, index) => {
+        return { ...item, SN: index + 1 };
+      });
+
+      setData(numberAddedData);
 
       setTotalActiveUsers(users.length - 1);
     } catch (error) {

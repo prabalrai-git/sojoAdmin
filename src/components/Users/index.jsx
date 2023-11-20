@@ -47,13 +47,14 @@ const Users = () => {
     }
   };
 
-  // console.log(data);
+  console.log(allOccupation);
   const columns = [
     {
       title: "S.N",
-      render: (text, record, index) => {
-        return index + 1;
-      },
+      dataIndex: "SN",
+      // render: (text, record, index) => {
+      //   return index + 1;
+      // },
     },
     {
       title: "Name",
@@ -120,6 +121,28 @@ const Users = () => {
     {
       title: "Occupation",
       dataIndex: "occupationId",
+      filters: [
+        {
+          text: "Student",
+          value: 1,
+        },
+        {
+          text: "Employee",
+          value: 2,
+        },
+        {
+          text: "Employer",
+          value: 3,
+        },
+        {
+          text: "Business Owner",
+          value: 4,
+        },
+        {
+          text: "Others",
+          value: 5,
+        },
+      ],
       render: (index, item) =>
         item?.occupationId
           ? allOccupation?.map((watup) => {
@@ -128,6 +151,9 @@ const Users = () => {
               }
             })
           : "n/a",
+
+      onFilter: (value, record) => record?.occupationId === value,
+      filterSearch: true,
 
       // width: "40%",
     },
@@ -162,9 +188,10 @@ const Users = () => {
     try {
       const res = await Axios.get("/admin/users", config);
 
-      const formattedData = res.data.data.map((item) => ({
+      const formattedData = res.data.data.map((item, index) => ({
         ...item,
         createdAt: moment(item.createdAt).format("YYYY-MM-DD"),
+        SN: index + 1,
       }));
 
       setData(formattedData);
