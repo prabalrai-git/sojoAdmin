@@ -152,6 +152,7 @@ const News = () => {
             }}
           />
           <RangePicker
+            allowClear={false}
             onChange={(a, e) => {
               setDatefilteredData([]);
               setPage(1);
@@ -175,7 +176,7 @@ const News = () => {
             </tr>
           </thead>
           <tbody style={{ verticalAlign: "middle" }}>
-            {datefilteredData
+            {datefilteredData.length
               ? datefilteredData.map((item) => {
                   return (
                     <tr scope="row" key={item.id} className="">
