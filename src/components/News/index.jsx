@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "./../../styles/Form.scss";
 import Delete from "./../Modals/Delete";
 import moment from "moment";
+import { DatePicker } from "antd";
 
 const News = () => {
   const [data, setData] = useState([]);
@@ -15,6 +16,10 @@ const News = () => {
   const [hasMore, setHasMore] = useState(true);
   const [search, setSearch] = useState("");
   const [config, setConfig] = useState(null);
+  const [datefilteredData, setDatefilteredData] = useState();
+  const [dateRange, setDateRange] = useState();
+
+  const { RangePicker } = DatePicker;
 
   useEffect(() => {
     setConfig({
@@ -99,6 +104,25 @@ const News = () => {
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
   };
+
+  useEffect(() => {
+    if (dateRange) {
+      getDateFilteredData(dateRange[0], dateRange[1]);
+    }
+  }, [dateRange, page]);
+
+  const getDateFilteredData = async (startDate, endDate) => {
+    try {
+      const res = await Axios.get(
+        `/admin/news/getNews/getNewsByDateRange?startDate=${startDate}&endDate=${endDate}&page=${page}`
+      );
+      datefilteredData?.length > 0
+        ? setDatefilteredData((prevData) => [...prevData, ...res.data.data])
+        : setDatefilteredData(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <ToastContainer />
@@ -127,6 +151,15 @@ const News = () => {
               setSearch(e.target.value);
             }}
           />
+          <RangePicker
+            onChange={(a, e) => {
+              setDatefilteredData([]);
+              setPage(1);
+
+              setDateRange(e);
+            }}
+            size={"middle"}
+          />
         </div>
       </div>
       <div className="table-responsive text-nowrap">
@@ -142,78 +175,151 @@ const News = () => {
             </tr>
           </thead>
           <tbody style={{ verticalAlign: "middle" }}>
-            {data.map((item) => {
-              return (
-                <tr scope="row" key={item.id} className="">
-                  <td>{sn++}</td>
-                  <td className="details-wrapper">
-                    <img src={item.image} alt="" className="thumbnail" />
-                    <div className="details">
-                      <h5>{item.title}</h5>
-                      <p>{item.previewText}</p>
-                    </div>
-                  </td>
+            {datefilteredData
+              ? datefilteredData.map((item) => {
+                  return (
+                    <tr scope="row" key={item.id} className="">
+                      <td>{sn++}</td>
+                      <td className="details-wrapper">
+                        <img src={item.image} alt="" className="thumbnail" />
+                        <div className="details">
+                          <h5>{item.title}</h5>
+                          <p>{item.previewText}</p>
+                        </div>
+                      </td>
 
-                  <td>
-                    <div className="d-flex gap-1">
-                      {item.topics
-                        ?.sort(
-                          (a, b) => a.news_topic.order - b.news_topic.order
-                        )
-                        .map((item) => {
-                          return (
-                            <button
-                              className="btn btn-secondary p-1"
-                              key={item.id}
-                            >
-                              <span className="badge badge-primary">
-                                {item.name}
-                              </span>
-                            </button>
-                          );
-                        })}
-                    </div>
-                  </td>
+                      <td>
+                        <div className="d-flex gap-1">
+                          {item.topics
+                            ?.sort(
+                              (a, b) => a.news_topic.order - b.news_topic.order
+                            )
+                            .map((item) => {
+                              return (
+                                <button
+                                  className="btn btn-secondary p-1"
+                                  key={item.id}
+                                >
+                                  <span className="badge badge-primary">
+                                    {item.name}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                        </div>
+                      </td>
 
-                  <td>{item.views} Views</td>
+                      <td>{item.views} Views</td>
 
-                  <td>
-                    {moment(item.createdAt).format("MMM Do YYYY h:mm:ss a")}{" "}
-                    <br />
-                    <span className="text-success">
-                      {/* {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "} */}
-                    </span>
-                  </td>
+                      <td>
+                        {moment(item.createdAt).format("MMM Do YYYY h:mm:ss a")}{" "}
+                        <br />
+                        <span className="text-success">
+                          {/* {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "} */}
+                        </span>
+                      </td>
 
-                  <td>
-                    <Link
-                      to={`/news/create/${item.id}`}
-                      className="btn btn-primary "
-                    >
-                      Edit
-                    </Link>{" "}
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => {
-                        setIsDeleteOpen(true);
-                        setId(item.id);
-                      }}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      className="btn btn-success"
-                      style={{ marginLeft: 10 }}
-                      onClick={() => {
-                        sendPushNotification(item);
-                      }}
-                    >
-                      Send Push Notifications
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+                      <td>
+                        <Link
+                          to={`/news/create/${item.id}`}
+                          className="btn btn-primary "
+                        >
+                          Edit
+                        </Link>{" "}
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => {
+                            setIsDeleteOpen(true);
+                            setId(item.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          className="btn btn-success"
+                          style={{ marginLeft: 10 }}
+                          onClick={() => {
+                            sendPushNotification(item);
+                          }}
+                        >
+                          Send Push Notifications
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              : data.map((item) => {
+                  return (
+                    <tr scope="row" key={item.id} className="">
+                      <td>{sn++}</td>
+                      <td className="details-wrapper">
+                        <img src={item.image} alt="" className="thumbnail" />
+                        <div className="details">
+                          <h5>{item.title}</h5>
+                          <p>{item.previewText}</p>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div className="d-flex gap-1">
+                          {item.topics
+                            ?.sort(
+                              (a, b) => a.news_topic.order - b.news_topic.order
+                            )
+                            .map((item) => {
+                              return (
+                                <button
+                                  className="btn btn-secondary p-1"
+                                  key={item.id}
+                                >
+                                  <span className="badge badge-primary">
+                                    {item.name}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                        </div>
+                      </td>
+
+                      <td>{item.views} Views</td>
+
+                      <td>
+                        {moment(item.createdAt).format("MMM Do YYYY h:mm:ss a")}{" "}
+                        <br />
+                        <span className="text-success">
+                          {/* {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "} */}
+                        </span>
+                      </td>
+
+                      <td>
+                        <Link
+                          to={`/news/create/${item.id}`}
+                          className="btn btn-primary "
+                        >
+                          Edit
+                        </Link>{" "}
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => {
+                            setIsDeleteOpen(true);
+                            setId(item.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          className="btn btn-success"
+                          style={{ marginLeft: 10 }}
+                          onClick={() => {
+                            sendPushNotification(item);
+                          }}
+                        >
+                          Send Push Notifications
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
           </tbody>
         </table>
       </div>
