@@ -176,7 +176,7 @@ const News = () => {
             </tr>
           </thead>
           <tbody style={{ verticalAlign: "middle" }}>
-            {datefilteredData.length
+            {datefilteredData
               ? datefilteredData.map((item) => {
                   return (
                     <tr scope="row" key={item.id} className="">
