@@ -366,6 +366,28 @@ const CreateTopic = () => {
       return () => clearTimeout(timer);
     }
   }, [title, config]);
+   const modules = {
+    toolbar: [
+      ["bold", "italic", "underline", "strike"], // toggled buttons
+      ["blockquote", "code-block"],
+      ["link", "image"],
+
+      [{ header: 1 }, { header: 2 }], // custom button values
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ script: "sub" }, { script: "super" }], // superscript/subscript
+      [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+      [{ direction: "rtl" }], // text direction
+
+      [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+      [{ font: [] }],
+      [{ align: [] }],
+
+      ["clean"], // remove formatting button
+    ],
+  };
 
   return (
     <>
@@ -457,6 +479,8 @@ const CreateTopic = () => {
             <ReactQuill
               theme="snow"
               value={news}
+                            modules={modules}
+
               onChange={setNews}
               style={{
                 backgroundColor: "#fff",
@@ -467,6 +491,8 @@ const CreateTopic = () => {
           <div className="input-wrapper">
             <label htmlFor="name">News in Nepali</label>
             <ReactQuill
+                            modules={modules}
+
               theme="snow"
               value={nepaliNews}
               onChange={setNepaliNews}
