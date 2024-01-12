@@ -6,7 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "./../../styles/Form.scss";
 import Delete from "./../Modals/Delete";
 import moment from "moment";
-import { DatePicker } from "antd";
+import { DatePicker, Space, Table, Tag } from "antd";
 
 const News = () => {
   const [data, setData] = useState([]);
@@ -123,19 +123,111 @@ const News = () => {
       console.log(error);
     }
   };
+
+  const columns = [
+    {
+      title: "SN",
+      dataIndex: "sn",
+      key: "sn",
+      render: (a, b, c) => <>{sn++}</>,
+    },
+    {
+      title: "News Details",
+      dataIndex: "image",
+      key: "image",
+      width: "50%",
+      render: (item, allitem) => {
+        return (
+          <td className="details-wrapper">
+            <img
+              src={item}
+              style={{ width: 125, height: 95 }}
+              alt=""
+              className="thumbnail"
+            />
+            <div className="details">
+              <h6>{allitem?.title}</h6>
+              <p>{allitem?.previewText}</p>
+            </div>
+          </td>
+        );
+      },
+    },
+    {
+      title: "Categories",
+      dataIndex: "topics",
+      key: "topics",
+      render: (item) => {
+        return (
+          <td>
+            <div className="d-flex gap-1">
+              {item
+                ?.sort((a, b) => a.news_topic.order - b.news_topic.order)
+                .map((item) => {
+                  return (
+                    <button className="btn btn-secondary p-1" key={item.id}>
+                      <span className="badge badge-primary">{item.name}</span>
+                    </button>
+                  );
+                })}
+            </div>
+          </td>
+        );
+      },
+    },
+    {
+      title: "Views",
+      dataIndex: "views",
+      key: "views",
+      width: "100px",
+      sorter: (a, b) => a.views - b.views,
+      render: (item) => <td>{item} Views</td>,
+    },
+    {
+      title: "Written Date",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: "15%",
+      render: (item) => (
+        <td>
+          {moment(item).format("MMM Do YYYY h:mm a")} <br />
+        </td>
+      ),
+    },
+
+    {
+      title: "Actions",
+      key: "action",
+      render: (_, record) => (
+        <td style={{ display: "flex", gap: 10 }}>
+          <Link to={`/news/create/${record.id}`} className="btn btn-primary ">
+            Edit
+          </Link>
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              setIsDeleteOpen(true);
+              setId(record.id);
+            }}
+          >
+            Delete
+          </button>
+          <button
+            className="btn btn-success"
+            style={{ marginLeft: 10, width: 200 }}
+            onClick={() => {
+              sendPushNotification(record);
+            }}
+          >
+            Send Push Notifications
+          </button>
+        </td>
+      ),
+    },
+  ];
+
   return (
     <>
-      <ToastContainer />
-      {id && isDeleteOpen && (
-        <Delete
-          title={"Do you want to delete this news ?"}
-          fetchData={fetchData}
-          route={`/admin/news/${id}`}
-          setIsDeleteOpen={setIsDeleteOpen}
-          toastMessage="News deleted successfully"
-          toast={toast}
-        />
-      )}
       <div className="heading">
         <h3>Created News</h3>
         <div className="heading-create">
@@ -163,173 +255,204 @@ const News = () => {
           />
         </div>
       </div>
-      <div className="table-responsive text-nowrap">
-        <table className="table my-5">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">News Details</th>
-              <th scope="col">Categories</th>
-              <th scope="col">Views</th>
-              <th scope="col">Written Date</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody style={{ verticalAlign: "middle" }}>
-            {datefilteredData
-              ? datefilteredData.map((item) => {
-                  return (
-                    <tr scope="row" key={item.id} className="">
-                      <td>{sn++}</td>
-                      <td className="details-wrapper">
-                        <img src={item.image} alt="" className="thumbnail" />
-                        <div className="details">
-                          <h5>{item.title}</h5>
-                          <p>{item.previewText}</p>
-                        </div>
-                      </td>
+      <Table
+        style={{ marginTop: 50 }}
+        columns={columns}
+        dataSource={datefilteredData ? datefilteredData : data}
+        scroll={{
+          x: 1400,
+        }}
+        pagination={{
+          showSizeChanger: true,
 
-                      <td>
-                        <div className="d-flex gap-1">
-                          {item.topics
-                            ?.sort(
-                              (a, b) => a.news_topic.order - b.news_topic.order
-                            )
-                            .map((item) => {
-                              return (
-                                <button
-                                  className="btn btn-secondary p-1"
-                                  key={item.id}
-                                >
-                                  <span className="badge badge-primary">
-                                    {item.name}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                        </div>
-                      </td>
-
-                      <td>{item.views} Views</td>
-
-                      <td>
-                        {moment(item.createdAt).format("MMM Do YYYY h:mm:ss a")}{" "}
-                        <br />
-                        <span className="text-success">
-                          {/* {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "} */}
-                        </span>
-                      </td>
-
-                      <td>
-                        <Link
-                          to={`/news/create/${item.id}`}
-                          className="btn btn-primary "
-                        >
-                          Edit
-                        </Link>{" "}
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => {
-                            setIsDeleteOpen(true);
-                            setId(item.id);
-                          }}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          className="btn btn-success"
-                          style={{ marginLeft: 10 }}
-                          onClick={() => {
-                            sendPushNotification(item);
-                          }}
-                        >
-                          Send Push Notifications
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              : data.map((item) => {
-                  return (
-                    <tr scope="row" key={item.id} className="">
-                      <td>{sn++}</td>
-                      <td className="details-wrapper">
-                        <img src={item.image} alt="" className="thumbnail" />
-                        <div className="details">
-                          <h5>{item.title}</h5>
-                          <p>{item.previewText}</p>
-                        </div>
-                      </td>
-
-                      <td>
-                        <div className="d-flex gap-1">
-                          {item.topics
-                            ?.sort(
-                              (a, b) => a.news_topic.order - b.news_topic.order
-                            )
-                            .map((item) => {
-                              return (
-                                <button
-                                  className="btn btn-secondary p-1"
-                                  key={item.id}
-                                >
-                                  <span className="badge badge-primary">
-                                    {item.name}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                        </div>
-                      </td>
-
-                      <td>{item.views} Views</td>
-
-                      <td>
-                        {moment(item.createdAt).format("MMM Do YYYY h:mm:ss a")}{" "}
-                        <br />
-                        <span className="text-success">
-                          {/* {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "} */}
-                        </span>
-                      </td>
-
-                      <td>
-                        <Link
-                          to={`/news/create/${item.id}`}
-                          className="btn btn-primary "
-                        >
-                          Edit
-                        </Link>{" "}
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => {
-                            setIsDeleteOpen(true);
-                            setId(item.id);
-                          }}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          className="btn btn-success"
-                          style={{ marginLeft: 10 }}
-                          onClick={() => {
-                            sendPushNotification(item);
-                          }}
-                        >
-                          Send Push Notifications
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-          </tbody>
-        </table>
-      </div>
+          defaultPageSize: 100,
+        }}
+      />
       {hasMore && (
-        <button className="my-5" onClick={handleLoadMore}>
+        <button
+          // className="my-5"
+          style={{ position: "relative", top: -55 }}
+          onClick={handleLoadMore}
+        >
           Load More
         </button>
       )}
+      <ToastContainer />
+      {id && isDeleteOpen && (
+        <Delete
+          title={"Do you want to delete this news ?"}
+          fetchData={fetchData}
+          route={`/admin/news/${id}`}
+          setIsDeleteOpen={setIsDeleteOpen}
+          toastMessage="News deleted successfully"
+          toast={toast}
+        />
+      )}
     </>
+  );
+
+  return (
+    <div className="table-responsive text-nowrap">
+      <table className="table my-5">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">News Details</th>
+            <th scope="col">Categories</th>
+            <th scope="col">Views</th>
+            <th scope="col">Written Date</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody style={{ verticalAlign: "middle" }}>
+          {datefilteredData
+            ? datefilteredData.map((item) => {
+                return (
+                  <tr scope="row" key={item.id} className="">
+                    <td>{sn++}</td>
+                    <td className="details-wrapper">
+                      <img src={item.image} alt="" className="thumbnail" />
+                      <div className="details">
+                        <h5>{item.title}</h5>
+                        <p>{item.previewText}</p>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div className="d-flex gap-1">
+                        {item.topics
+                          ?.sort(
+                            (a, b) => a.news_topic.order - b.news_topic.order
+                          )
+                          .map((item) => {
+                            return (
+                              <button
+                                className="btn btn-secondary p-1"
+                                key={item.id}
+                              >
+                                <span className="badge badge-primary">
+                                  {item.name}
+                                </span>
+                              </button>
+                            );
+                          })}
+                      </div>
+                    </td>
+
+                    <td>{item.views} Views</td>
+
+                    <td>
+                      {moment(item.createdAt).format("MMM Do YYYY h:mm:ss a")}{" "}
+                      <br />
+                      <span className="text-success">
+                        {/* {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "} */}
+                      </span>
+                    </td>
+
+                    <td>
+                      <Link
+                        to={`/news/create/${item.id}`}
+                        className="btn btn-primary "
+                      >
+                        Edit
+                      </Link>{" "}
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => {
+                          setIsDeleteOpen(true);
+                          setId(item.id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        className="btn btn-success"
+                        style={{ marginLeft: 10 }}
+                        onClick={() => {
+                          sendPushNotification(item);
+                        }}
+                      >
+                        Send Push Notifications
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            : data.map((item) => {
+                return (
+                  <tr scope="row" key={item.id} className="">
+                    <td>{sn++}</td>
+                    <td className="details-wrapper">
+                      <img src={item.image} alt="" className="thumbnail" />
+                      <div className="details">
+                        <h5>{item.title}</h5>
+                        <p>{item.previewText}</p>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div className="d-flex gap-1">
+                        {item.topics
+                          ?.sort(
+                            (a, b) => a.news_topic.order - b.news_topic.order
+                          )
+                          .map((item) => {
+                            return (
+                              <button
+                                className="btn btn-secondary p-1"
+                                key={item.id}
+                              >
+                                <span className="badge badge-primary">
+                                  {item.name}
+                                </span>
+                              </button>
+                            );
+                          })}
+                      </div>
+                    </td>
+
+                    <td>{item.views} Views</td>
+
+                    <td>
+                      {moment(item.createdAt).format("MMM Do YYYY h:mm:ss a")}{" "}
+                      <br />
+                      <span className="text-success">
+                        {/* {moment(item.updatedAt).format("MMM Do YYYY h:mm:ss a")}{" "} */}
+                      </span>
+                    </td>
+
+                    <td>
+                      <Link
+                        to={`/news/create/${item.id}`}
+                        className="btn btn-primary "
+                      >
+                        Edit
+                      </Link>{" "}
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => {
+                          setIsDeleteOpen(true);
+                          setId(item.id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        className="btn btn-success"
+                        style={{ marginLeft: 10 }}
+                        onClick={() => {
+                          sendPushNotification(item);
+                        }}
+                      >
+                        Send Push Notifications
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
