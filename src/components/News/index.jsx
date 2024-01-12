@@ -61,7 +61,7 @@ const News = () => {
   const fetchData = async () => {
     try {
       const res = await Axios.get(
-        `/admin/news?page=${page}&search=${search}`,
+        `/admin/news?page=${page}&search=${search}&limit=200`,
         config
       );
       if (!search) {
@@ -265,10 +265,11 @@ const News = () => {
         pagination={{
           showSizeChanger: true,
 
-          defaultPageSize: 100,
+          defaultPageSize: 10,
+          // onChange: () => handleLoadMore(),
         }}
       />
-      {hasMore && (
+      {/* {hasMore && (
         <button
           // className="my-5"
           style={{ position: "relative", top: -55 }}
@@ -276,7 +277,7 @@ const News = () => {
         >
           Load More
         </button>
-      )}
+      )} */}
       <ToastContainer />
       {id && isDeleteOpen && (
         <Delete
