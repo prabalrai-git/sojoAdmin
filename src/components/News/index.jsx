@@ -114,7 +114,7 @@ const News = () => {
   const getDateFilteredData = async (startDate, endDate) => {
     try {
       const res = await Axios.get(
-        `/admin/news/getNews/getNewsByDateRange?startDate=${startDate}&endDate=${endDate}&page=${page}`
+        `/admin/news/getNews/getNewsByDateRange?startDate=${startDate}&endDate=${endDate}&page=${page}&limit=200`
       );
       datefilteredData?.length > 0
         ? setDatefilteredData((prevData) => [...prevData, ...res.data.data])
