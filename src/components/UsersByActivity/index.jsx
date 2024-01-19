@@ -386,7 +386,7 @@ const UsersByActivity = () => {
           {allUsers?.length}
         </span>
       </p>
-      <p
+      {/* <p
         style={{
           fontWeight: "normal",
           // textDecoration: "underline",
@@ -411,7 +411,7 @@ const UsersByActivity = () => {
         <span style={{ color: "red", fontWeight: "bold", marginLeft: 4 }}>
           {Number(allUsers?.length) - Number(totalActiveUsers)}
         </span>
-      </p>
+      </p> */}
       <p
         style={{
           fontWeight: "normal",
@@ -421,18 +421,22 @@ const UsersByActivity = () => {
         }}
       >
         Count After filter Applied :
-        <span style={{ color: "blue", fontWeight: "bold", marginLeft: 4 }}>
+        <span style={{ color: "#26B160", fontWeight: "bold", marginLeft: 4 }}>
           {filteredDataNumber}
         </span>
       </p>
       <Table
         pagination={{
+          style: { position: "absolute", top: -70, right: 0 },
           pageSize: pages,
+          pageSizeOptions: [10, 50, 100, 500, 1000, 1500, 5000],
+
           onChange: (e, a) => setPages(a),
           showTotal: (e, a) => setFilteredDataNumber(e),
         }}
         columns={columns}
         dataSource={data}
+        style={{ paddingBottom: 100 }}
         // pagination={{ pageSize: 10 }}
       />
     </>

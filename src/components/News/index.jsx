@@ -230,7 +230,7 @@ const News = () => {
     <>
       <div className="heading">
         <h3>Created News</h3>
-        <div className="heading-create">
+        <div className="heading-create" style={{ marginBottom: 60 }}>
           <Link className="link" to={"/news/create"}>
             Add News
           </Link>
@@ -256,13 +256,15 @@ const News = () => {
         </div>
       </div>
       <Table
-        style={{ marginTop: 50 }}
+        style={{ marginTop: 50, paddingBottom: 100 }}
         columns={columns}
         dataSource={datefilteredData ? datefilteredData : data}
         scroll={{
           x: 1400,
         }}
         pagination={{
+          style: { position: "absolute", top: -70, right: 0 },
+
           showSizeChanger: true,
 
           defaultPageSize: 10,

@@ -446,8 +446,11 @@ const Users = () => {
       <Table
         pagination={{
           showTotal: (e, a) => setFilteredDataNumber(e),
+          style: { position: "absolute", top: -70, right: 0 },
+          pageSizeOptions: [10, 50, 100, 500, 1000, 1500],
         }}
         columns={columns}
+        style={{ paddingBottom: 100 }}
         dataSource={filteredData ? filteredData : data}
         // pagination={{ pageSize: 10 }}
       />
