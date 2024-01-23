@@ -366,7 +366,7 @@ const CreateTopic = () => {
       return () => clearTimeout(timer);
     }
   }, [title, config]);
-   const modules = {
+  const modules = {
     toolbar: [
       ["bold", "italic", "underline", "strike"], // toggled buttons
       ["blockquote", "code-block"],
@@ -388,6 +388,18 @@ const CreateTopic = () => {
       ["clean"], // remove formatting button
     ],
   };
+  function countWords(str) {
+    // Remove leading and trailing whitespaces
+    const trimmedString = str.trim();
+
+    // Split the string into an array of words using whitespace as the delimiter
+    const words = trimmedString.split(/\s+/);
+
+    // Count the number of words in the array
+    const wordCount = words.length;
+
+    return wordCount;
+  }
 
   return (
     <>
@@ -417,8 +429,8 @@ const CreateTopic = () => {
               }}
             />
             <p className="text-muted mt-2">
-              Suggested title length is 63 characters{" "}
-              {title.length > 0 && `( ${title.length} characters )`}
+              Suggested title length is 60 words{" "}
+              {title.length > 0 && `( ${countWords(title)} words )`}
             </p>
           </div>
 
@@ -479,8 +491,7 @@ const CreateTopic = () => {
             <ReactQuill
               theme="snow"
               value={news}
-                            modules={modules}
-
+              modules={modules}
               onChange={setNews}
               style={{
                 backgroundColor: "#fff",
@@ -491,8 +502,7 @@ const CreateTopic = () => {
           <div className="input-wrapper">
             <label htmlFor="name">News in Nepali</label>
             <ReactQuill
-                            modules={modules}
-
+              modules={modules}
               theme="snow"
               value={nepaliNews}
               onChange={setNepaliNews}
