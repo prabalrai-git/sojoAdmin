@@ -37,8 +37,8 @@ const UsersByActivity = () => {
   const formattedDate = `${year}-${month}-${day}`;
 
   useEffect(() => {
-    setStartDate(today);
-    setEndDate(today);
+    setStartDate(today.toISOString().split("T")[0]);
+    setEndDate(today.toISOString().split("T")[0]);
   }, []);
   const onActiveDaysSelected = (e) => {
     const inputValue = e.target.value;
